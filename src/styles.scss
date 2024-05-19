@@ -1,0 +1,37 @@
+/* You can add global styles to this file, and also import other style files */
+@import 'assets/styles/variables';
+@import 'assets/styles/helpers';
+@import 'assets/styles/spacing';
+@import 'assets/styles/buttons';
+@import 'assets/styles/override';
+@import 'assets/styles/text';
+@import 'assets/styles/dictionaries-styles';
+@import 'assets/styles/typography';
+@import 'assets/styles/material-design';
+
+body {
+  margin: 0;
+
+  gridster {
+    background: #eee;
+  }
+}
+
+.main-container {
+  width: calc(100% - 80px);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.govpl__top-bar {
+  min-height: 74px;
+}
+
+.mat-tab-label.mat-tab-disabled {
+  color: $gray1;
+}
+
+textarea:disabled + .cke {
+  opacity: 0.5;
+  pointer-events: none;
+}

@@ -1,0 +1,21 @@
+<div class="form-group mb-3">
+  <div class="custom-checkbox">
+    <input
+      type="checkbox"
+      [(ngModel)]="value"
+      [required]="required"
+      [disabled]="disabled"
+      [name]="name"
+      [class.is-invalid]="false"
+      [id]="name"
+      [attr.aria-required]="required"
+      [attr.aria-describedby]="name + '-describedby'"
+      (change)="changedManuallyHandler($event)"
+    />
+    <label [for]="name">
+      <span *ngIf="required && showRequiredMark">*</span>
+      <ng-content></ng-content>
+    </label>
+  </div>
+  <div [id]="name + '-describedby'" class="invalid-feedback" aria-live="off"></div>
+</div>

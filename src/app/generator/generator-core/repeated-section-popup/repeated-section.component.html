@@ -1,0 +1,177 @@
+<h2 mat-dialog-title>Konfiguracja sekcji powtarzającej się</h2>
+
+<section mat-dialog-content>
+  <form #sectionForm="ngForm" class="form">
+    <ng-container *ngIf="field">
+      <div class="mt-3 mb-3">
+        <mc-input-text
+          required
+          label="Nazwa sekcji"
+          type="text"
+          name="sectionName"
+          [(ngModel)]="field.title"
+          minlength="3"
+          (keyup)="onChangeTitle()"
+        >
+        </mc-input-text>
+      </div>
+
+      <div class="mb-3">
+        <mc-input-text
+          #techNameField
+          required
+          [uniqueTechName]="field.id"
+          name="repeatSectionTechName"
+          label="Nazwa techniczna"
+          [disabled]="!allowTechNameChange"
+          [(ngModel)]="field.techName"
+          minlength="3"
+          [errorMessages]="{
+            techName: 'Taka nazwa techniczna już istnieje. Podaj unikalną nazwę techniczną'
+          }"
+          (change)="onChangeTechName()"
+        >
+        </mc-input-text>
+      </div>
+
+      <p class="mb-3">Sposób wyświetlania sekcji</p>
+      <div class="d-flex mb-3">
+        <mc-input-radio
+          class="mr-4"
+          name="repeatingSectionViewType"
+          [value]="RepeatingSectionViewType.DEFAULT"
+          [(ngModel)]="field.repeatingSectionViewType"
+          required
+        >
+          Domyślny
+        </mc-input-radio>
+        <mc-input-radio
+          name="repeatingSectionViewType"
+          [value]="RepeatingSectionViewType.TABLE"
+          [(ngModel)]="field.repeatingSectionViewType"
+          required
+        >
+          Tabelaryczny
+        </mc-input-radio>
+      </div>
+
+      <p>
+        <b>WAŻNE!</b> Stwórz układ pól sekcji powtarzającej. Każde pole można edytować po nadaniu nazwy technicznej i
+        typu pola.
+      </p>
+
+      <!-- gridster container -->
+      <div [style.height.px]="containerHeight" class="gridster-container" [class.invalid]="!allFieldsValid">
+        <gridster [options]="gridConfig" #gridster>
+          <gridster-item [item]="item" *ngFor="let item of items; let i = index">
+            <repeated-section-item
+              [item]="item"
+              [index]="i"
+              [repeatingSectionViewType]="field.repeatingSectionViewType"
+              (removeItem)="removeItem($event)"
+              (changedItem)="onItemChanged()"
+            >
+            </repeated-section-item>
+          </gridster-item>
+        </gridster>
+      </div>
+
+      <p *ngIf="!allFieldsValid" class="text-red mt-2">Nie wszystkie pola wypewnione</p>
+
+      <button
+        type="button"
+        class="btn btn-secondary mt-3"
+        (click)="addItem()"
+        data-testid="addNewFieldInRepeatingSection"
+      >
+        Dodaj pole
+      </button>
+
+      <div class="mt-3">
+        <mc-input-text
+          label="Maksymalna ilość powtórzeń"
+          type="number"
+          name="maxRepeat"
+          [(ngModel)]="repeatingSectionConfig.maxRepeat"
+        >
+        </mc-input-text>
+      </div>
+
+      <div class="mt-3">
+        <mc-input-text
+          label="Etykieta przycisku dodania elementu"
+          type="text"
+          name="addBtnName"
+          [(ngModel)]="repeatingSectionConfig.addBtnName"
+        >
+        </mc-input-text>
+      </div>
+
+      <!-- #region QUERY BUILDER -->
+      <div class="mt-4 mb-1">
+        <h2 class="mt-2 mb-3">Dynamiczny stany pola (zależności między polami)</h2>
+
+        <mc-input-checkbox
+          class="input-mb-1 input-mt-3"
+          name="enableDynamicStatesRepeatinSection"
+          [(ngModel)]="isOpenQueryBuilder"
+          (change)="onToggleDynamicStates()"
+        >
+          Ustaw dynamiczne stany pola
+        </mc-input-checkbox>
+
+        <div *ngIf="isOpenQueryBuilder">
+          <p class="mt-4">Ustaw warunki stanu używając komendy jsonata</p>
+
+          <div class="d-flex mt-3 mb-3" *ngFor="let state of field.states">
+            <mc-input-select
+              class="mr-2"
+              name="state"
+              placeholder="Wybierz stan"
+              [options]="statesOptionItems"
+              optionDisplay="name"
+              optionValue="id"
+              [(ngModel)]="state.type"
+              [style.width]="'350px'"
+              [matTooltip]="getStateLabel(state.type)"
+            >
+            </mc-input-select>
+
+            <mc-input-text
+              class="mr-2"
+              type="text"
+              name="queryCommandInput"
+              placeholder="Wpisz warunek stanu"
+              [(ngModel)]="state.query"
+              [style.width]="'100%'"
+              [style.max-width]="'750px'"
+              (click)="openStateQueryJsonEdition(state)"
+              [matTooltip]="state.query"
+            >
+            </mc-input-text>
+
+            <div>
+              <button class="btn btn-primary" (click)="openStateQueryJsonEdition(state)" [style.min-width]="'205px'">
+                Edytuj warunek
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- #endregion QUERY BUILDER -->
+    </ng-container>
+  </form>
+</section>
+
+<div mat-dialog-actions class="justify-end mb-1 mt-4">
+  <button class="btn btn-secondary" type="button" (click)="onClose()">Anuluj</button>
+  <button
+    class="btn btn-primary ml-4"
+    type="submit"
+    (click)="onSave()"
+    [class.btn-disabled]="!isFormValid"
+    data-testid="saveRepeatingSection"
+  >
+    Zapisz
+  </button>
+</div>

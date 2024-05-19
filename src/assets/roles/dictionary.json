@@ -1,0 +1,26 @@
+{
+  "newDictionaryButton": [
+    {
+      "roleId": "!ALLOW_NEW_DICT",
+      "status": "DISABLED"
+    }
+  ],
+  "editDictionaryButton": [
+    {
+      "roleId": "!ALLOW_EDIT_DICT",
+      "status": "DISABLED"
+    }
+  ],
+  "removeDictionaryButton": [
+    {
+      "roleId": "!ALLOW_DELETE_DICT",
+      "status": "DISABLED"
+    }
+  ],
+  "toggleExternalApiCheckbox": [
+    {
+      "roleId": "!ALLOW_API_DICT",
+      "status": "DISABLED"
+    }
+  ]
+}

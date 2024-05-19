@@ -1,0 +1,36 @@
+.btn-clear {
+  border: 0;
+  background-color: transparent;
+  padding: 0;
+  outline: none;
+  &:focus {
+    outline: none;
+  }
+}
+
+.btn-link {
+  color: #0052a5;
+  padding-left: 0;
+  padding-right: 0;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.close-popup-btn {
+  height: 25px;
+}
+
+.btn-disabled {
+  background-color: $gray1 !important;
+  border-color: $gray1 !important;
+}
+
+.btn-secondary.btn-disabled {
+  color: $gray1 !important;
+  background-color: $white !important;
+}
+
+.btn svg {
+  width: auto;
+  height: 16px;
+}

@@ -1,0 +1,21 @@
+<div class="form-group">
+  <label [class.hidden]="!label" [for]="name"> {{ label }}{{ required && label ? '*' : '' }} </label>
+  <input
+    #input
+    [type]="type"
+    [id]="name"
+    [name]="name"
+    [maxlength]="maxlength"
+    [class.is-invalid]="invalid | async"
+    [class.read-only]="readOnly"
+    [placeholder]="placeholder"
+    [(ngModel)]="value"
+    [attr.aria-required]="required"
+    [attr.aria-invalid]="invalid | async"
+    [attr.aria-describedby]="name + '-describedby'"
+    [disabled]="disabled || readOnly"
+  />
+  <div [id]="name + '-describedby'" class="invalid-feedback" aria-live="off" *ngIf="invalid | async">
+    {{ failures | async }}
+  </div>
+</div>

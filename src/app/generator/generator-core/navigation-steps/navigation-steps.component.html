@@ -1,0 +1,94 @@
+<message-label class="mb-4" *ngIf="!stepsWithoutSummaryStep.length; else steps">
+  Nie dodano jeszcze kroków nawigacji.
+</message-label>
+
+<ng-template #steps>
+  <div class="mb-5">
+    <div
+      class="d-flex align-items-center mb-3"
+      data-testid="navigationStepItem"
+      *ngFor="let step of stepsWithoutSummaryStep | orderBy: 'orderIndex'; let i = index"
+    >
+      <mc-input-text
+        required
+        class="navigation-step__input"
+        name="navigation-step-name-{{ i }}"
+        placeholder="Wpisz nazwę kroku"
+        [unique]="stepNameIsUnique.bind(this)"
+        [errorMessages]="{
+          unique: 'Taki krok już istnieje. Podaj unikalną nazwę kroku'
+        }"
+        [(ngModel)]="step.name"
+        [ngModelOptions]="{ standalone: true }"
+        (ngModelChange)="change.emit()"
+      ></mc-input-text>
+      <div class="navigation-step__order-buttons d-flex ml-4">
+        <button
+          type="button"
+          class="navigation-step__order-button btn-clear"
+          *ngIf="i > 0"
+          (click)="navigationStepUp(step)"
+        >
+          <span class="gov-icon gov-icon--arrow-up"></span>
+        </button>
+        <button
+          type="button"
+          class="navigation-step__order-button btn-clear"
+          *ngIf="i < stepsWithoutSummaryStep.length - 1"
+          (click)="navigationStepDown(step)"
+        >
+          <span class="gov-icon gov-icon--arrow-down"></span>
+        </button>
+      </div>
+      <button
+        class="navigation-step__remove btn-clear ml-4"
+        type="button"
+        quickConfirm
+        popoverMessage="Czy na pewno chcesz usunąć ten krok?"
+        (confirm)="removeNavigationStep(step)"
+      >
+        <img class="mr-2" src="assets/icons/trash.svg" />
+        Usuń krok
+      </button>
+    </div>
+  </div>
+</ng-template>
+
+<button
+  type="button"
+  class="btn btn-primary mb-3"
+  data-testid="addNavigationStep"
+  (click)="addNavigationStep()"
+  *ngIf="stepsWithoutSummaryStep.length < formVersion.tabs.length"
+>
+  Dodaj krok
+</button>
+
+<div class="mb-4">
+  <mc-input-checkbox
+    class="input-mb-2"
+    name="enableSummaryStep"
+    [(ngModel)]="formVersion.enableSummaryStep"
+    (change)="toggleSummaryNavigationStep()"
+  >
+    Włącz dodatkowy krok nawigacji na podsumowaniu
+  </mc-input-checkbox>
+
+  <div class="d-flex mb-3">
+    <mc-input-text
+      *ngIf="formVersion.enableSummaryStep"
+      required
+      class="navigation-step__input"
+      name="navigation-step-name-summary"
+      placeholder="Wpisz nazwę kroku"
+      [unique]="stepNameIsUnique.bind(this)"
+      [errorMessages]="{
+        unique: 'Taki krok już istnieje. Podaj unikalną nazwę kroku'
+      }"
+      [(ngModel)]="summaryStepName"
+      (ngModelChange)="updateSummaryStepName()"
+    ></mc-input-text>
+  </div>
+</div>
+
+<input required type="hidden" name="navigation-steps-is-unique" [equalTo]="true" [(ngModel)]="isUnique" />

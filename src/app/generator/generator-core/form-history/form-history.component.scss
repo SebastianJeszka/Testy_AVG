@@ -1,0 +1,18 @@
+.settings {
+  display: flex;
+}
+
+.isDisabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+
+  & > a {
+    color: currentColor;
+    display: inline-block; /* For IE11/ MS Edge bug */
+    pointer-events: none;
+    text-decoration: none;
+  }
+}
+.formHistory {
+  overflow: auto;
+}

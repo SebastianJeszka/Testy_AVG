@@ -1,0 +1,78 @@
+<h6 class="mb-2">Typ przekierowania</h6>
+
+<div class="d-flex align-items-start" [style.width]="'100%'">
+  <mc-input-radio
+    class="mr-5"
+    aria-label="Typ przekierowania"
+    name="redirectType"
+    [disabled]="disableState"
+    [(ngModel)]="redirectType"
+    [value]="redirectTypeEnum.EXTERNAL"
+  >
+    Zewnętrzny
+  </mc-input-radio>
+
+  <mc-input-radio
+    class="mr-5"
+    aria-label="Typ przekierowania"
+    name="redirectType"
+    [disabled]="disableState"
+    [(ngModel)]="redirectType"
+    [value]="redirectTypeEnum.INTERNAL"
+  >
+    Wewnętrzny
+  </mc-input-radio>
+</div>
+<div *ngIf="redirectType === redirectTypeEnum.EXTERNAL">
+  <h6 class="mb-2">Link przekierowania</h6>
+
+  <div class="d-flex align-items-start" [style.width]="'100%'">
+    <mc-input-select
+      required
+      name="procesRedirectProtocol_{{ processExecuteTime }}"
+      [options]="protocolsList"
+      placeholder="Protokół"
+      [(ngModel)]="protocolOfRedirectUrl"
+      [ngStyle]="{ width: '200px' }"
+      class="mr-3"
+      [disabled]="disableState"
+      (change)="onChangeUrl()"
+      data-testid="processRedirectProtocol"
+    >
+    </mc-input-select>
+
+    <mc-input-text
+      required
+      name="urlRedirect_{{ processExecuteTime }}"
+      [ngStyle]="{ width: '100%' }"
+      placeholder="podaj nazwę strony, np: google.com"
+      minlength="3"
+      [(ngModel)]="redirectUrl"
+      [disabled]="disableState"
+      (paste)="onPasteRedirectUrl($event)"
+      (change)="onChangeUrl()"
+      data-testid="processRedirectUrl"
+    >
+    </mc-input-text>
+  </div>
+</div>
+<div *ngIf="redirectType === redirectTypeEnum.INTERNAL">
+  <h6 class="mb-2">Wybierz formularz:</h6>
+
+  <div class="d-flex align-items-start" [style.width]="'100%'">
+    <mc-input-select
+      required
+      name="form"
+      [options]="forms"
+      placeholder="Formularz"
+      [(ngModel)]="formId"
+      [ngStyle]="{ width: '200px' }"
+      class="mr-3"
+      [disabled]="disableState"
+      optionDisplay="name"
+      optionValue="id"
+      (change)="onChangeForm()"
+    >
+    </mc-input-select>
+  </div>
+</div>

@@ -1,0 +1,29 @@
+<h2 mat-dialog-title>Dodaj nowe pole</h2>
+<section mat-dialog-content>
+  <mat-list role="list">
+    <mat-list-item
+      class="config-item"
+      [ngClass]="{ activeChildren: attribute.name === selectedAttribute?.name }"
+      role="listitem"
+      *ngFor="let attribute of attributeList"
+      (click)="selectAttribute(attribute)"
+      ><span matListItemTitle>{{ attribute.name }}</span>
+      <span matListItemLine>{{ attribute.fieldType }}</span></mat-list-item
+    >
+  </mat-list>
+</section>
+
+<div class="mb-1 mt-4">
+  <div mat-dialog-actions class="mb-1 mt-4 justify-end">
+    <button class="btn btn-secondary" type="button" (click)="closeAddField()">Anuluj</button>
+    <button
+      class="btn btn-primary ml-4"
+      type="submit"
+      (click)="saveField()"
+      [class.btn-disabled]="!selectedAttribute"
+      data-testid="submitAddFieldButton"
+    >
+      Wybierz
+    </button>
+  </div>
+</div>

@@ -1,0 +1,12 @@
+<div class="accordionContainer simple-accordion my-3 mx-0">
+  <details class="accordion-detail expand" [attr.data-testid]="dataTestIdValue" [open]="isOpen">
+    <summary
+      class="thin pl-0 py-3 pr-4 summary-icon"
+      (click)="toggleClickSummary($event)"
+      [attr.data-testid]="dataTestIdSummary"
+    >
+      <h3 [attr.data-testid]="dataTestIdTitle">{{ title }}</h3>
+    </summary>
+    <ng-content></ng-content>
+  </details>
+</div>

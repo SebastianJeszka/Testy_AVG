@@ -1,0 +1,30 @@
+<a
+  [routerLink]="'/generator/view/' + formId"
+  [queryParams]="{ currentTabId: currentTabId }"
+  class="gov-icon gov-icon--arrow-left font-weight-bold mb-3"
+  data-testid="backToGeneratorLink"
+>
+  <b> Powrót</b>
+</a>
+
+<header class="mt-4 mb-4">
+  <h1 class="gov-h1">Edytor sekcji podsumowania</h1>
+</header>
+
+<section>
+  <div class="mb-4">
+    <ckeditor
+      name="description"
+      [config]="ckeditorConfig"
+      [(ngModel)]="summaryHtmlTemplate"
+      (ngModelChange)="onSummaryHtmlTemplateChange()"
+      (ready)="onInstanceReady($event)"
+    ></ckeditor>
+  </div>
+
+  <div class="mb-4">
+    <button type="button" class="btn" (click)="saveSummaryDescription()">
+      Zapisz zmiany {{ isEdited ? '*' : '' }}
+    </button>
+  </div>
+</section>

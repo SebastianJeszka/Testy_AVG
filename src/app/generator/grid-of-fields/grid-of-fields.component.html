@@ -1,0 +1,27 @@
+<section class="mt-4" [style.height.px]="containerHeight">
+  <!-- GRID -->
+  <gridster [options]="gridConfig" #gridster>
+    <gridster-item
+      *ngFor="let item of data; let i = index"
+      [item]="item"
+      [ngClass]="{
+        'repeated-section': item?.field.type === fieldTypes.REPEATING_SECTION,
+        disabled: state !== formVersionState.SKETCH
+      }"
+      data-testid="fieldItem"
+    >
+      <question-field
+        *ngIf="item.field"
+        [item]="item"
+        [type]="type"
+        [index]="i"
+        [tabs]="tabs"
+        [hideSettings]="state !== formVersionState.SKETCH"
+        [currentTab]="currentTab"
+        (removeItem)="removeInput(item)"
+        (fieldChange)="onFieldChanges($event, i)"
+        (moveItem)="onMoveItem($event)"
+      ></question-field>
+    </gridster-item>
+  </gridster>
+</section>

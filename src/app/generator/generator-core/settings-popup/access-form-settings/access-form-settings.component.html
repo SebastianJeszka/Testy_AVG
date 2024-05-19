@@ -1,0 +1,30 @@
+<section>
+  <form
+    #accessFormSettings="ngForm"
+    class="form"
+    *ngIf="userVerificationProcess && userVerificationProcess.registerFormId; else noProcess"
+  >
+    <div class="mb-3 mt-4 popup-content">
+      <registered-users-list class="mt-2" [formId]="userVerificationProcess.registerFormId"></registered-users-list>
+    </div>
+    <div class="g-row mr-0 mt-4">
+      <button
+        type="button"
+        class="btn mr-3"
+        (click)="onSave()"
+        [disabled]="!accessFormSettings.valid"
+        data-testid="accessFormSettingsSave"
+      >
+        Zastosuj zmiany
+      </button>
+    </div>
+  </form>
+
+  <ng-template #noProcess>
+    <div class="mb-3 mt-4 popup-content">
+      <p class="alert alert-info">
+        Przejdź do zarządzania przepływem formularza i dodaj proces "Weryfikacja użytkownika."
+      </p>
+    </div>
+  </ng-template>
+</section>

@@ -1,0 +1,210 @@
+{
+  "navigateToAddForm": [
+    {
+      "roleId": "!ALLOW_NEW_FORM",
+      "status": "DISABLED"
+    }
+  ],
+  "importForm": [
+    {
+      "roleId": "!ALLOW_IMPORT",
+      "status": "DISABLED"
+    }
+  ],
+  "chooseOwnerList": [
+    {
+      "roleId": "!ONLY_MY_OWN",
+      "status": "DISABLED"
+    }
+  ],
+  "formSettingsAccess": [
+    {
+      "roleId": "!ONLY_MY_OWN",
+      "status": "DISABLED"
+    }
+  ],
+  "removeFormButton": [
+    {
+      "roleId": "!ALLOW_DELETE_FORM",
+      "status": "DISABLED"
+    }
+  ],
+  "cloneFormButton": [
+    {
+      "roleId": "!ALLOW_CLONE_FORM",
+      "status": "DISABLED"
+    }
+  ],
+  "archiveFormButton": [
+    {
+      "roleId": "!ALLOW_ARCH_FORM",
+      "status": "DISABLED"
+    }
+  ],
+  "newSketchButton": [
+    {
+      "roleId": "!ALLOW_NEW_VERSION",
+      "status": "DISABLED"
+    }
+  ],
+  "saveFormButton": [
+    {
+      "roleId": "!ALLOW_SAVE_FORM",
+      "status": "DISABLED"
+    },
+    {
+      "roleId": "!ALLOW_EDIT_FORM_VERSION",
+      "status": "DISABLED"
+    }
+  ],
+  "blockFormVersionButton": [
+    {
+      "roleId": "!ALLOW_BLOCK_FORM",
+      "status": "DISABLED"
+    }
+  ],
+  "unblockFormVersionButton": [
+    {
+      "roleId": "!ALLOW_BLOCK_FORM",
+      "status": "DISABLED"
+    }
+  ],
+  "openDistributionListButton": [
+    {
+      "roleId": "!ALLOW_PROCES",
+      "status": "DISABLED"
+    }
+  ],
+  "addNewTabButton": [
+    {
+      "roleId": "!ALLOW_EDIT_FORM_VERSION",
+      "status": "DISABLED"
+    }
+  ],
+  "settingsTabButton": [
+    {
+      "roleId": "!ALLOW_EDIT_FORM_VERSION",
+      "status": "DISABLED"
+    }
+  ],
+  "removeTabButton": [
+    {
+      "roleId": "!ALLOW_EDIT_FORM_VERSION",
+      "status": "DISABLED"
+    }
+  ],
+  "fieldSettingsButton": [
+    {
+      "roleId": "!ALLOW_EDIT_FORM_VERSION",
+      "status": "DISABLED"
+    }
+  ],
+  "addFieldButton": [
+    {
+      "roleId": "!ALLOW_EDIT_FORM_VERSION",
+      "status": "DISABLED"
+    }
+  ],
+  "addRepeatingSectionButton": [
+    {
+      "roleId": "!ALLOW_EDIT_FORM_VERSION",
+      "status": "DISABLED"
+    }
+  ],
+  "fetchResultsMenuItemButton": [
+    {
+      "roleId": "!ALLOW_DATA_READ",
+      "status": "DISABLED"
+    }
+  ],
+  "fetchStatsMenuItemButton": [
+    {
+      "roleId": "!ALLOW_DATA_READ",
+      "status": "DISABLED"
+    }
+  ],
+  "deleteRelatedDataButton": [
+    {
+      "roleId": "!ALLOW_DATA_DELETE",
+      "status": "DISABLED"
+    }
+  ],
+  "editSummarySectionButton": [
+    {
+      "roleId": "!ALLOW_EDIT_FORM_VERSION",
+      "status": "DISABLED"
+    }
+  ],
+  "sendResultsTab": [
+    {
+      "roleId": "!ALLOW_DATA_READ",
+      "status": "DISABLED"
+    }
+  ],
+  "removeDataEnabledButton": [
+    {
+      "roleId": "!ALLOW_DATA_DELETE",
+      "status": "DISABLED"
+    }
+  ],
+  "changeStatusToPendingButton": [
+    {
+      "roleId": "!PUBLICATION_MANAGE",
+      "status": "DISABLED"
+    }
+  ],
+  "availableFormDatepicker": [
+    {
+      "roleId": "!PUBLICATION_MANAGE",
+      "status": "DISABLED"
+    }
+  ],
+  "captchaConfigEnabled": [
+    {
+      "roleId": "!ALLOW_EDIT_FORM_VERSION",
+      "status": "DISABLED"
+    }
+  ],
+  "summaryPageConfig": [
+    {
+      "roleId": "!ALLOW_EDIT_FORM_VERSION",
+      "status": "DISABLED"
+    }
+  ],
+  "supportEmailConfig": [
+    {
+      "roleId": "!TECHNICAL_SUPPORT_MANAGE",
+      "status": "DISABLED"
+    }
+  ],
+  "configEndingPage": [
+    {
+      "roleId": "!ALLOW_EDIT_FORM_VERSION",
+      "status": "DISABLED"
+    }
+  ],
+  "messagesForm": [
+    {
+      "roleId": "!PUBLICATION_MANAGE",
+      "status": "DISABLED"
+    }
+  ],
+  "emailsDefineSendResults": [
+    {
+      "roleId": "!ALLOW_DATA_READ",
+      "status": "DISABLED"
+    }
+  ],
+  "raportLabel": [
+    {
+      "roleId": "!ALLOW_SERVICE_LABEL_SET",
+      "status": "DISABLED"
+    }
+  ],
+  "chooseFormType": [
+    {
+      "roleId": "!ALLOW_FORM_PATTERN",
+      "status": "DISABLED"
+    }
+  ]
+}

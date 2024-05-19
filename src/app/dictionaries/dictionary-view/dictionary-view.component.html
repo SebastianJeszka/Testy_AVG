@@ -1,0 +1,87 @@
+<h1 mat-dialog-title>Słownik</h1>
+
+<section>
+  <div mat-dialog-content class="dictionary">
+    <form class="form" #editDictionaryForm="ngForm">
+      <div class="dictionary__title">
+        <h2 *ngIf="!isEditing" data-testid="dictionaryName">{{ dictionary.name }}</h2>
+        <mc-input-text
+          *ngIf="isEditing"
+          required
+          name="dictionaryName"
+          data-testid="editDictionaryNameInput"
+          label="Tytuł"
+          [(ngModel)]="dictionary.name"
+        ></mc-input-text>
+        <span class="dictionary__date text-light-grey">
+          {{ dictionary.createDate | date : 'dd.MM.yyyy HH:mm' }}
+        </span>
+      </div>
+
+      <p class="mb-4" *ngIf="!isEditing" data-testid="dictionaryDescription">
+        {{ dictionary.description }}
+      </p>
+      <div class="mb-3">
+        <mc-input-textarea
+          *ngIf="isEditing"
+          label="Opis"
+          name="description"
+          data-testid="editDictionaryDescriptionTextarea"
+          [(ngModel)]="dictionary.description"
+          required
+        ></mc-input-textarea>
+      </div>
+    </form>
+
+    <h4 class="mb-1">Elementy słownika:</h4>
+    <div class="dictionary__items">
+      <dictionary-tree
+        [terms]="dictionary?.children"
+        [dictionaryLevelsData]="dictionary?.dictionaryLevelsData"
+        [editState]="isEditing"
+        (treeChanged)="onTreeChanged($event)"
+      ></dictionary-tree>
+    </div>
+
+    <p class="text-light-grey mt-3">Ilość elementów: {{ dictionary.children?.length }}</p>
+  </div>
+  <div mat-dialog-actions class="mb-1 dictionary__actions">
+    <div class="dictionary__actions--left">
+      <button class="btn btn-secondary" *ngIf="!isEditing" (click)="onNoClick()">Powrót</button>
+      <button *ngIf="isEditing" class="btn btn-secondary mr-3" (click)="onCancelEdit()">Anuluj zmiany</button>
+    </div>
+
+    <div class="dictionary__actions--right">
+      <button
+        class="btn btn-secondary mr-4"
+        quickConfirm
+        popoverMessage="Czy na pewno chcesz usunąć ten słownik?"
+        data-testid="removeDictionaryButton"
+        (confirm)="onRemoveDictionary()"
+        *roleId="'removeDictionaryButton'"
+      >
+        Usuń
+      </button>
+      <ng-container *ngIf="!isEditing">
+        <button
+          class="btn btn-primary"
+          data-testid="editDictionaryButton"
+          (click)="onClickEdit()"
+          *roleId="'editDictionaryButton'"
+        >
+          Edytuj
+        </button>
+      </ng-container>
+      <ng-container *ngIf="isEditing">
+        <button
+          class="btn btn-primary"
+          data-testid="saveEditDictionaryButton"
+          (click)="onSave()"
+          [disabled]="!editDictionaryForm.valid"
+        >
+          Zapisz
+        </button>
+      </ng-container>
+    </div>
+  </div>
+</section>

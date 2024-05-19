@@ -1,0 +1,314 @@
+<div class="question">
+  <div class="question__head mb-2">
+    <h2 class="gov-h4 mb-0" stopPropagation>
+      <ng-container *ngIf="type === formVersionTypes.QUIZ"> {{ index + 1 }}. </ng-container>
+      {{ field.title ? field.title : field.techName }}
+      <ng-container *ngIf="field.validation?.required"> *</ng-container>
+    </h2>
+  </div>
+
+  <article
+    class="question__body"
+    *ngIf="field.type !== types.REPEATING_SECTION && field.type !== types.CONSENT_SECTION; else notCommonInput"
+  >
+    <ng-container *ngIf="!hideSettings">
+      <button
+        stopPropagation
+        class="pointer question__settings btn-clear ml-3"
+        type="button"
+        [matMenuTriggerFor]="settings"
+        data-testid="fieldSettingsButton"
+        *roleId="'fieldSettingsButton'"
+      >
+        <mat-icon>settings</mat-icon>
+      </button>
+    </ng-container>
+
+    <!-- description -->
+    <p
+      *ngIf="field.description"
+      class="mb-3 question__description text-editor"
+      [innerHTML]="field.description | safeHtml"
+      stopPropagation
+    ></p>
+
+    <!-- info about required fields -->
+    <mc-info-field *ngIf="field.showRequiredFieldsInfo">
+      <small>* Pola obowiązkowe</small>
+    </mc-info-field>
+
+    <!-- fields switch -->
+    <ng-container [ngSwitch]="field.type">
+      <!-- TEXTAREA -->
+      <mc-input-textarea
+        *ngSwitchCase="types.TEXTAREA"
+        stopPropagation
+        [label]="field.title"
+        [placeholder]="field.placeholder"
+        name="input_{{ index }}"
+        [(ngModel)]="field.defaultValue"
+        [minlength]="field.validation?.minLength ? field.validation?.minLength : ''"
+        [maxlength]="field.validation?.maxLength ? field.validation?.maxLength : 255"
+        [required]="field.validation?.required"
+      ></mc-input-textarea>
+
+      <!-- RADIO -->
+      <ng-container *ngSwitchCase="types.RADIO">
+        <ng-container *ngIf="externalConfigLevels?.length && field.dictionaryExternalConfig; else defaultRadio">
+          <mc-input-radio
+            *ngFor="let option of externalConfigLevels[0]"
+            stopPropagation
+            name="input_{{ index }}"
+            optionDisplay="name"
+            [value]="option.name"
+            [(ngModel)]="testVal"
+            [required]="field.validation?.required"
+          >
+            {{ option.label }}
+          </mc-input-radio>
+        </ng-container>
+        <ng-template #defaultRadio>
+          <mc-input-radio
+            *ngFor="let option of field.options"
+            stopPropagation
+            name="input_{{ index }}"
+            optionDisplay="name"
+            [value]="option.id"
+            [(ngModel)]="testVal"
+            [required]="field.validation?.required"
+          >
+            {{ option.name }}
+          </mc-input-radio>
+        </ng-template>
+      </ng-container>
+
+      <!-- CHEKBOXES -->
+      <ng-container *ngSwitchCase="types.CHECKBOX">
+        <ng-container *ngIf="externalConfigLevels?.length && field.dictionaryExternalConfig; else defaultCheckbox">
+          <mc-input-checkbox
+            *ngFor="let check of externalConfigLevels[0]; let j = index"
+            stopPropagation
+            name="input_{{ index }}_{{ j }}"
+          >
+            {{ check.label }}
+          </mc-input-checkbox>
+        </ng-container>
+        <ng-template #defaultCheckbox>
+          <mc-input-checkbox
+            *ngFor="let check of field.options; let j = index"
+            stopPropagation
+            name="input_{{ index }}_{{ j }}"
+          >
+            {{ check.name }}
+          </mc-input-checkbox>
+        </ng-template>
+      </ng-container>
+
+      <!-- SELECT -->
+      <ng-container *ngSwitchCase="types.SELECT">
+        <div>
+          <mc-input-select
+            *ngIf="!externalConfigLevels.length && !field.dictionaryExternalConfig"
+            stopPropagation
+            name="input_{{ index }}"
+            [placeholder]="getPlaceholderFromLevelsData(0) || field.placeholder"
+            [options]="field.options"
+            [search]="field.searchEnabled"
+            optionDisplay="name"
+            optoinValue="id"
+            [label]="getTitleFromLevelsData(0)"
+            [(ngModel)]="testVal"
+            [required]="field.validation?.required"
+            [multiple]="field.multiple"
+            (ngModelChange)="onModelChange($event, 0)"
+          >
+          </mc-input-select>
+        </div>
+
+        <ng-container *ngIf="optionsLevels?.length">
+          <div class="mt-5" *ngFor="let opts of optionsLevels; let i = index">
+            <mc-input-select
+              stopPropagation
+              name="input_{{ index }}_{{ i + 1 }}"
+              [placeholder]="getPlaceholderFromLevelsData(i + 1) || field.placeholder"
+              [search]="field.searchEnabled"
+              [options]="opts"
+              optionDisplay="name"
+              optoinValue="id"
+              [label]="getTitleFromLevelsData(i + 1)"
+              [(ngModel)]="optionsAnswers[i + 1]"
+              [required]="field.validation?.required"
+              (ngModelChange)="onModelChange($event, i + 1)"
+            >
+            </mc-input-select>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="externalConfigLevels?.length && field.dictionaryExternalConfig">
+          <div *ngFor="let opts of externalConfigLevels; let dictLevel = index">
+            <mc-input-select
+              *ngIf="!(field.multiple && dictLevel > 0)"
+              stopPropagation
+              name="{{ field.id }}input_{{ index }}_{{ dictLevel }}"
+              [placeholder]="getPlaceholderFromLevelsData(dictLevel) || field.placeholder"
+              [search]="field.searchEnabled"
+              [options]="opts"
+              optionDisplay="label"
+              [label]="getTitleFromLevelsData(dictLevel)"
+              [(ngModel)]="optionsAnswers[dictLevel]"
+              [required]="field.validation?.required"
+              [multiple]="field.multiple"
+              (ngModelChange)="onExternalDictModelChange(dictLevel)"
+            >
+            </mc-input-select>
+          </div>
+        </ng-container>
+      </ng-container>
+
+      <!-- DATEPICKER -->
+      <mc-input-datepicker
+        *ngSwitchCase="types.DATEPICKER"
+        stopPropagation
+        name="input_{{ index }}"
+        [required]="field.validation?.required"
+        label="Wybierz date"
+        [minDate]="minDateForDatePicker()"
+        [maxDate]="maxDateForDatePicker()"
+        [(ngModel)]="testVal"
+      >
+      </mc-input-datepicker>
+
+      <!-- NUMBER INPUT -->
+      <mc-input-text
+        *ngSwitchCase="types.NUMBER"
+        stopPropagation
+        type="number"
+        name="input_{{ index }}"
+        [required]="field.validation?.required"
+        [(ngModel)]="testVal"
+        [label]="field.title"
+        [placeholder]="field.placeholder"
+        [digits]="{
+          max: field.validation?.maxValue ? field.validation?.maxValue : null,
+          min: field.validation?.minValue ? field.validation?.minValue : null
+        }"
+      >
+      </mc-input-text>
+
+      <!-- FILE UPLOADER -->
+      <mc-input-files
+        *ngSwitchCase="types.FILE_UPLOADER"
+        class="d-block mb-5"
+        name="input_{{ index }}"
+        [disabled]="true"
+        [options]="{
+          acceptedFormats: field.validation?.fileFormats ? field.validation?.fileFormats : [],
+          multiple: true,
+          label: '',
+          maxSize: field.validation?.maxFileSize ? field.validation?.maxFileSize * 1024 * 1024 : 1 * 1024 * 1024,
+          fileLimit: field.validation?.maxFilesNumber ? field.validation?.maxFilesNumber : 5
+        }"
+      >
+      </mc-input-files>
+
+      <!-- HTML_VIEWER -->
+      <ng-container *ngSwitchCase="types.HTML_VIEWER">
+        Komponent wyświetli (HTML) zwrócony przez proces generowania podglądu.
+        <mc-input-textarea
+          [label]="field.title"
+          [placeholder]="field.placeholder"
+          [name]="field.defaultValue"
+          [(ngModel)]="field.defaultValue"
+        ></mc-input-textarea>
+        <div class="d-flex mt-4" *ngIf="field.downloadFileExtensionTypes?.length">
+          <ng-container *ngFor="let extensionType of field.downloadFileExtensionTypes">
+            <button class="btn btn-secondary mr-4" (click)="$event.preventDefault()">
+              Pobierz jako {{ extensionType }}
+            </button>
+          </ng-container>
+        </div>
+      </ng-container>
+
+      <!-- DEFAULT / TEXT FIELD -->
+      <mc-input-text
+        *ngSwitchCase="types.TEXT_FIELD"
+        stopPropagation
+        type="text"
+        name="input_{{ index }}"
+        [required]="field.validation?.required"
+        [(ngModel)]="field.defaultValue"
+        [label]="field.title"
+        [placeholder]="field.placeholder"
+        minlength="{{ field.validation?.minLength ? field.validation?.minLength : '' }}"
+        [maxlength]="field.validation?.maxLength ? field.validation?.maxLength : 255"
+      >
+      </mc-input-text>
+
+      <!-- it should be render only for show double input is here to confirm value -->
+      <confirmation-input *ngIf="field.confirmation.isRequired" [field]="field"> </confirmation-input>
+
+      <!-- add another types here -->
+    </ng-container>
+  </article>
+
+  <!-- not common inputs -->
+  <ng-template #notCommonInput>
+    <article class="question__body">
+      <ng-container *ngIf="!hideSettings">
+        <button
+          stopPropagation
+          class="pointer question__settings btn-clear ml-3"
+          type="button"
+          [matMenuTriggerFor]="settings"
+          data-testid="fieldSettingsButton"
+          *roleId="'fieldSettingsButton'"
+        >
+          <mat-icon>settings</mat-icon>
+        </button>
+      </ng-container>
+
+      <!-- REPEATED SECTION -->
+      <repeated-section [sectionData]="field" *ngIf="field.type === types.REPEATING_SECTION"></repeated-section>
+
+      <!-- CONSENTS SECTION -->
+      <placed-consents-section [field]="field" *ngIf="field.type === types.CONSENT_SECTION"></placed-consents-section>
+    </article>
+  </ng-template>
+
+  <!-- pages -->
+  <mat-menu #pages="matMenu">
+    <button
+      mat-menu-item
+      *ngFor="let tab of tabs; let i = index"
+      [disabled]="i === currentTab"
+      (click)="onMoveQuestion(i)"
+    >
+      {{ tab }}
+    </button>
+  </mat-menu>
+
+  <!-- settings menu -->
+  <mat-menu #settings>
+    <button
+      mat-menu-item
+      (click)="onOpenEdition()"
+      *ngIf="field.type !== types.REPEATING_SECTION"
+      data-testid="editField"
+    >
+      Edytuj
+    </button>
+    <button mat-menu-item (click)="onEditRepeatingSection()" *ngIf="field.type === types.REPEATING_SECTION">
+      Edytuj
+    </button>
+    <button mat-menu-item [matMenuTriggerFor]="pages" data-testid="moveField">Przenieś</button>
+    <button
+      mat-menu-item
+      quickConfirm
+      popoverMessage="Czy na pewno chcesz usunąć pole?"
+      (confirm)="removeItem.emit(index)"
+      data-testid="removeField"
+    >
+      Usuń pole
+    </button>
+  </mat-menu>
+</div>

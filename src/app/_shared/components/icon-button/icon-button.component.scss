@@ -1,0 +1,63 @@
+@import 'src/assets/styles/variables';
+
+.icon-button__circle {
+  background-color: $dark-blue;
+  border-radius: 50%;
+  color: #fff;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-button__circle--outline {
+  border: 2px solid $dark-blue;
+  background: none;
+  color: $dark-blue;
+}
+
+.icon-button__circle--size-small {
+  width: 20px;
+  height: 20px;
+
+  mat-icon {
+    font-size: 20px;
+    line-height: 24px;
+  }
+}
+
+.icon-button__text {
+  font-weight: 700;
+  color: $dark-blue;
+  display: flex;
+  align-items: center;
+}
+
+.icon-button:hover {
+  .icon-button__circle {
+    background-color: $light-blue;
+  }
+  .icon-button__circle--outline {
+    border-color: $light-blue;
+    background: none;
+    color: $light-blue;
+  }
+  .icon-button__text {
+    color: $light-blue;
+  }
+}
+
+.icon-button:disabled {
+  .icon-button__circle {
+    background-color: $gray1;
+  }
+  .icon-button__circle--outline {
+    border-color: $gray1;
+    background: none;
+    color: $gray1;
+  }
+  .icon-button__text {
+    color: $gray1;
+  }
+}

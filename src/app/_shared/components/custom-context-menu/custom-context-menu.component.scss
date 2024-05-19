@@ -1,0 +1,42 @@
+@import '../../../../assets/styles/variables';
+.context-menu-container {
+  background: $white;
+  border: solid 1px $gray4;
+  z-index: 1000;
+  position: fixed;
+}
+
+.menu-list__item {
+  cursor: pointer;
+  padding: 12px;
+  background: $white;
+  border-bottom: solid 1px #0000001c;
+  width: 100%;
+  white-space: nowrap;
+  display: flex;
+  justify-content: space-between;
+  &:hover {
+    background: $gray4;
+    display: flex;
+    & > ul.menu-list {
+      display: flex;
+    }
+  }
+  .icon-more {
+    color: $dark-blue;
+  }
+}
+
+.menu-list {
+  box-shadow: 0 10px 20px rgb(64 64 64 / 15%);
+  background: $white;
+  position: absolute;
+  display: none;
+  width: min-content;
+  flex-direction: column;
+  right: 0;
+  left: 100%;
+  &--first-level {
+    display: flex;
+  }
+}

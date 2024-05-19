@@ -1,0 +1,33 @@
+@import '../../../../assets/styles/variables';
+
+.file-info {
+  border-bottom: 2px solid $gray3;
+  padding: 0.625rem 0;
+
+  &__name {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 0.3125rem;
+    font-size: 1rem;
+    color: #000;
+  }
+  &__remove-icon {
+    max-height: 0.875rem;
+    max-width: 0.875rem;
+    cursor: pointer;
+  }
+  &__details {
+    display: flex;
+    justify-content: space-between;
+    color: $gray1;
+    font-size: 0.875rem;
+  }
+}
+
+input {
+  display: none !important;
+}
+
+:host .invalid-feedback {
+  display: block;
+}

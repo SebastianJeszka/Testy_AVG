@@ -1,0 +1,15 @@
+<input matInput class="mat-select-search-input mat-select-search-hidden" />
+<div class="mat-select-search-inner form" [class.mat-select-search-inner-multiple]="matSelect.multiple">
+  <input
+    matInput
+    type="text"
+    class="mat-select-search-input"
+    #searchSelectInput
+    (keydown)="handleKeydown($event)"
+    (input)="onInputChange($event.target.value)"
+    [placeholder]="placeholder"
+  />
+</div>
+<div *ngIf="noEntriesFoundLabel && value && options?.length === 0" class="mat-select-search-no-entries-found">
+  {{ noEntriesFoundLabel }}
+</div>

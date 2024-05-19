@@ -1,0 +1,100 @@
+<h6 class="mb-2 mt-4" data-testid="autoCompleteHeader">Lista odbiorców</h6>
+
+<mc-input-select
+  name="select recipient"
+  [options]="recipientsItems"
+  placeholder="Wybierz odbiorcę"
+  optionDisplay="name"
+  optionValue="id"
+  [(ngModel)]="recipientsList"
+  (change)="onRecipientsChanged($event)"
+  class="mt-4 mb-4"
+  data-testid="processTypeSelect"
+  multiple
+>
+</mc-input-select>
+
+<message-label class="mb-2" *ngIf="!sendingResultsConfig.registeredExternalApis.length; else autocompleteTemplate">
+  Nie wybrano żadnej wartości.
+</message-label>
+
+<ng-template #autocompleteTemplate>
+  <div *ngFor="let item of sendingResultsConfig.registeredExternalApis; let index = index" class="mb-2 mt-1">
+    <div *ngFor="let prop of item.registeredExternalApiMapping | keyvalue; let i = index">
+      <mat-slide-toggle
+        name="slide-toggle_{{ prop.value.externalMapField }}"
+        [color]="color"
+        [checked]="prop.value.backgroundData"
+        [disabled]="false"
+        (change)="onSliderChangeFieldReference(prop.value)"
+        >Wybierz referencję danych z procesu</mat-slide-toggle
+      >
+      <div class="d-flex mb-2 mt-1 autocomplete-process-response__row">
+        <div
+          class="d-flex autocomplete-process-response__row flex-basis-100"
+          *ngIf="prop.value.backgroundData !== true"
+        >
+          <div class="mr-3 flex-basis-50" *ngIf="tabs && fields">
+            <mc-input-select
+              required
+              name="pageId_{{ prop.value.fieldId }}"
+              [options]="tabs"
+              placeholder="Wybierz stronę"
+              optionDisplay="name"
+              optionValue="id"
+              [(ngModel)]="prop.value.tabId"
+              (change)="onChangePage(prop.value)"
+            >
+            </mc-input-select>
+          </div>
+          <div class="flex-basis-50">
+            <mc-input-select
+              required
+              name="fieldId_{{ prop.value.fieldId }}"
+              [options]="fields[prop.value.tabId] ? fields[prop.value.tabId] : []"
+              placeholder="Wybierz pole"
+              optionDisplay="name"
+              optionValue="id"
+              [(ngModel)]="prop.value.fieldId"
+              [disabled]="!prop.value.tabId"
+            >
+            </mc-input-select>
+          </div>
+        </div>
+
+        <div class="flex-basis-100" *ngIf="prop.value.backgroundData === true">
+          <mc-input-text
+            required
+            name="backgroundDataField_{{ prop.value.externalMapField }}"
+            [placeholder]="getBackgroundDataPlaceholder()"
+            [(ngModel)]="prop.value.backgroundDataField"
+            (contextmenu)="displayContextMenu($event, item.registeredExternalApiId, prop.key); (false)"
+            (change)="getPropNameFromDisplayName(true, prop.value.backgroundDataField)"
+            [disabled]="!allProcesses.length"
+          >
+          </mc-input-text>
+          <background-data-context-menu
+            *ngIf="backgroundDataMenuItems.length > 0 && isDisplayBackgroundDataMenu"
+            [ngStyle]="getBackgroundDataMenuStyle()"
+            [contextMenuItems]="backgroundDataMenuItems"
+            (contextMenuItemClick)="handleMenuItemClick($event)"
+          ></background-data-context-menu>
+        </div>
+
+        <div class="mr-3 ml-3 mt-2">
+          <span class="gov-icon gov-icon--trend-rising"></span>
+        </div>
+
+        <div class="flex-basis-25">
+          <mc-input-text
+            required
+            name="externalMapField_{{ prop.value.externalMapField }}"
+            placeholder="Zewnętrzne mapowanie"
+            [(ngModel)]="prop.value.externalMapField"
+            [disabled]="true"
+          ></mc-input-text>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>

@@ -1,0 +1,22 @@
+.new-item-inp {
+  max-width: 200px;
+}
+
+.dictionary-tree__name {
+  margin-right: 1rem;
+}
+
+.dictionary-tree__action {
+  display: flex;
+  align-items: center;
+
+  mat-icon {
+    margin-right: 0.5rem;
+  }
+}
+
+.d-flex {
+  mc-input-text {
+    width: 100%;
+  }
+}

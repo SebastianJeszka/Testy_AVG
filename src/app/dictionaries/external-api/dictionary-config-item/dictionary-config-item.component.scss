@@ -1,0 +1,20 @@
+.config-item {
+  &__icon {
+    display: block;
+    width: 12px;
+  }
+
+  &__action {
+    font-size: 0.8rem;
+  }
+
+  &__header {
+    font-weight: bold;
+  }
+
+  .d-flex {
+    mc-input-text {
+      width: 100%;
+    }
+  }
+}

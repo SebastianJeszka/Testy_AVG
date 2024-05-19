@@ -1,0 +1,25 @@
+<div class="popup-content">
+  <div [style.max-width]="'450px'">
+    <mc-input-select
+      name="registerFormId"
+      data-testid="accessFormListSelect"
+      placeholder="Wybierz"
+      label="Wybierz formularz rejestrujcy"
+      [options]="registerFormList.items"
+      optionDisplay="name"
+      optionValue="id"
+      [(ngModel)]="process.registerFormId"
+      required
+    >
+    </mc-input-select>
+  </div>
+
+  <label>Opis na stronie porażki</label>
+  <div class="mb-5" [style.max-width]="'600px'">
+    <ckeditor
+      name="registerVerificationErrorMessage"
+      [config]="ckeditor"
+      [(ngModel)]="process.registerVerificationErrorMessage"
+    ></ckeditor>
+  </div>
+</div>

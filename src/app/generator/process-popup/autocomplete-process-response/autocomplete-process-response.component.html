@@ -1,0 +1,101 @@
+<h6 class="mb-2" data-testid="autoCompleteHeader">Ustaw autouzupełniania pól</h6>
+<message-label class="mb-2" *ngIf="!autocompleteMap?.length; else autocompleteTemplate">
+  Nie wybrano żadnej wartości.
+</message-label>
+<ng-template #autocompleteTemplate>
+  <div
+    *ngFor="let item of autocompleteMap; let i = index"
+    class="select-lists-rows d-flex mb-2 autocomplete-process-response__row"
+  >
+    <div class="flex-basis-100 margins-input-on-mob" *ngIf="respMaps && processDataType === ProcessDataType.LOGIN">
+      <mc-input-select
+        required
+        name="propFromMap_{{ i }}_{{ processDataType }}"
+        [options]="respMaps[process.type] ? respMaps[process.type] : []"
+        placeholder="Wybierz wartość do przepisania"
+        optionDisplay="name"
+        optionValue="id"
+        [(ngModel)]="item.responseProperty"
+        [disabled]="disableState"
+        [alreadySelectedValue]="ifMapPropIsSelected.bind(this)"
+        [index]="i"
+        [errorMessages]="{
+          alreadySelected: 'Ta wartość już wybrana'
+        }"
+        attr.data-testid="propFromMap_{{ i }}"
+      >
+      </mc-input-select>
+    </div>
+
+    <div class="flex-basis-100 margins-input-on-mob" *ngIf="processDataType === ProcessDataType.EXTERNAL">
+      <input
+        type="text"
+        required
+        name="propFromMap_{{ i }}_{{ processDataType }}"
+        placeholder="Wpisz właściwość przepisania"
+        [(ngModel)]="item.responseProperty"
+        [disabled]="disableState"
+        attr.data-testid="propFromMap_{{ i }}"
+        (change)="onSetExternalDataResponseMapping(i, item.responseProperty)"
+      />
+    </div>
+
+    <div class="mr-3 ml-3 mt-2 hide-on-mobile">
+      <span class="gov-icon gov-icon--trend-rising"></span>
+    </div>
+
+    <div class="mr-3 flex-basis-100 margins-input-on-mob" *ngIf="tabs && fields">
+      <mc-input-select
+        required
+        name="page_{{ i }}_{{ processDataType }}"
+        [options]="tabs"
+        placeholder="Wybierz stronę"
+        optionDisplay="name"
+        optionValue="id"
+        [(ngModel)]="item.tabId"
+        [disabled]="disableState"
+        (change)="onChangePage(item)"
+        attr.data-testid="pageForAutocomplete_{{ i }}"
+      >
+      </mc-input-select>
+    </div>
+
+    <div class="flex-basis-100 margins-input-on-mob">
+      <mc-input-select
+        required
+        name="field_{{ i }}_{{ processDataType }}"
+        [options]="fields[item.tabId] ? fields[item.tabId] : []"
+        placeholder="Wybierz pole"
+        optionDisplay="name"
+        optionValue="id"
+        [(ngModel)]="item.fieldId"
+        [disabled]="disableState"
+        [alreadySelectedValue]="ifFieldIsSelected.bind(this)"
+        [index]="i"
+        [errorMessages]="{
+          alreadySelected: 'Ta wartość już wybrana'
+        }"
+        attr.data-testid="fieldForAutocomplete_{{ i }}"
+      >
+      </mc-input-select>
+    </div>
+
+    <button
+      class="trash-button ml-4"
+      (click)="onRemoveField(i)"
+      [disabled]="disableState"
+      attr.data-testid="removeAutocompleteRow_{{ i }}"
+    >
+      <img src="assets/icons/trash.svg" />
+    </button>
+  </div>
+</ng-template>
+
+<button
+  class="btn btn-secondary mb-4"
+  (click)="onAddField()"
+  [disabled]="disableState || disableAddButton"
+  data-testid="addAutocompleteFieldButton"
+>
+  Dodaj pole
+</button>

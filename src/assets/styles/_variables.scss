@@ -1,0 +1,73 @@
+$dark-blue: #0052a5;
+$light-blue: #006cd7; //aka hover color
+$dark-red: #a7162d;
+$light-red: #d5233f;
+$gray1: #656565;
+$gray2: #767676;
+$gray3: #b7b7b7;
+$gray4: #f1f1f1;
+$gray5: #fcfcfc;
+$white: #fff;
+$yellow: #eba828;
+$green: #598527;
+$black: #000 !default;
+
+$accordion-border: 1px solid $gray4;
+$content-expanded-bottom-padding: 1.7rem;
+$icon-arrow-up: '\e90b';
+$icon-arrow-down: '\ea23';
+$accordion-w: 23px;
+
+$gridster-hover: #dcdcdc;
+$input-border-color: $gray3;
+$base-border-radius: 0.25rem;
+
+// media dimensions
+$min-bg-mob: 31.25rem; //500px
+$max-mob: 43.6875rem; //699px
+$min-tab: 43.75rem; //700px
+$max-tab: 79.9375rem; //1279px
+$min-desk: 80rem; //1280px
+$full-desk: 93.75rem; //1500px
+
+$spacer: 1rem !default;
+$spacers: () !default;
+$spacers: map-merge(
+  (
+    0: 0,
+    1: (
+      $spacer * 0.25
+    ),
+    2: (
+      $spacer * 0.5
+    ),
+    3: $spacer,
+    4: (
+      $spacer * 1.5
+    ),
+    5: (
+      $spacer * 3
+    ),
+    6: (
+      $spacer * 5
+    )
+  ),
+  $spacers
+);
+
+$grid-breakpoints: (
+  xs: 0,
+  sm: $min-bg-mob,
+  md: $min-tab,
+  lg: $min-desk,
+  xl: $full-desk
+) !default;
+
+@mixin gov-icons {
+  font: normal normal normal 14px/1 'gov-icons';
+  // use !important to prevent issues with browser extensions that change fonts
+  font-family: 'gov-icons' !important;
+  font-size: inherit;
+  speak: none;
+  text-transform: none;
+}

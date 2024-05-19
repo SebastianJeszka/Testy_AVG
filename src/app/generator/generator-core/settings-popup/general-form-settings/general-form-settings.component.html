@@ -1,0 +1,255 @@
+<ng-container *ngIf="formSettings">
+  <form #generalSettingsForm="ngForm">
+    <section class="form popup-content pl-2">
+      <div class="mb-3 mt-4">
+        <h5 class="mb-2">Ustawienia tła</h5>
+        <div>
+          <input
+            type="file"
+            (change)="fileChangeEvent($event)"
+            accept="image/*"
+            *ngIf="formVersion.state === formVersionState.SKETCH"
+          />
+
+          <div *ngIf="formVersion.state === formVersionState.SKETCH">
+            <image-cropper
+              *ngIf="imageChangedEvent"
+              [imageChangedEvent]="imageChangedEvent"
+              [maintainAspectRatio]="true"
+              [containWithinAspectRatio]="containWithinAspectRatio"
+              [aspectRatio]="3 / 4"
+              [onlyScaleDown]="true"
+              [roundCropper]="false"
+              [canvasRotation]="canvasRotation"
+              [transform]="transform"
+              [alignImage]="'left'"
+              [resizeToWidth]="800"
+              [cropperMinWidth]="128"
+              format="png"
+              (imageCropped)="imageCropped($event)"
+              (imageLoaded)="imageLoaded()"
+              (cropperReady)="cropperReady($event)"
+              (loadImageFailed)="loadImageFailed()"
+            ></image-cropper>
+          </div>
+
+          <p *ngIf="previewBackgroundImage" data-testid="backgroundPreviewLabel">Podgląd tła:</p>
+          <img
+            [style.width]="'320px'"
+            [src]="previewBackgroundImage"
+            [style.border]="previewBackgroundImage ? '1px solid black' : 'none'"
+          />
+        </div>
+
+        <button
+          type="button"
+          class="btn btn-secondary mr-3 mt-4"
+          [class.mb-4]="previewBackgroundImage"
+          (click)="onRemoveBg()"
+          *ngIf="previewBackgroundImage && formVersion.state === formVersionState.SKETCH"
+          data-testid="removeBackgroundButton"
+        >
+          Usuń tło
+        </button>
+      </div>
+
+      <div class="mb-3">
+        <h5 class="mb-2">Usuwanie danych formularza</h5>
+        <mc-input-checkbox
+          class="input-mb-1"
+          name="removeDataEnabled"
+          [(ngModel)]="formSettings.removeData.enabled"
+          (change)="onRemovaDataEnabledChange()"
+          [disabled]="formVersion.state !== formVersionState.SKETCH"
+          *roleId="'removeDataEnabledButton'"
+        >
+          Włącz usuwanie danych formularza
+        </mc-input-checkbox>
+        <div class="d-flex" *ngIf="formSettings.removeData.enabled">
+          <input
+            [style.width]="'320px'"
+            name="removeDataDelay"
+            type="range"
+            min="1"
+            max="24"
+            step="1"
+            [value]="formSettings.removeData.delay"
+            [(ngModel)]="formSettings.removeData.delay"
+          />
+          <p class="ml-4">Opóźnienie: {{ formSettings.removeData.delay }} godz.</p>
+        </div>
+      </div>
+      <ng-container *ngIf="formSettings.availability">
+        <div class="mb-3">
+          <h5 class="mb-2">Okres dostępności formularza</h5>
+          <div class="d-flex align-items-center">
+            <mc-input-datepicker
+              *roleId="'availableFormDatepicker'"
+              class="mr-3"
+              name="availableFrom"
+              label="Wybierz datę i godzinę od:"
+              showSeconds="true"
+              [(ngModel)]="formSettings.availability.availableFrom"
+              [maxDate]="formSettings.availability.availableTo || null"
+              [errorMessages]="{
+                maxDate: 'Wybrana data musi być mniejsza od daty końcowej'
+              }"
+              [withTime]="true"
+            >
+            </mc-input-datepicker>
+            <mc-input-datepicker
+              *roleId="'availableFormDatepicker'"
+              name="availableTo"
+              label="Wybierz datę i godzinę do:"
+              [(ngModel)]="formSettings.availability.availableTo"
+              [minDate]="formSettings.availability.availableFrom || null"
+              [errorMessages]="{
+                minDate: 'Wybrana data musi być większa od daty początkowej'
+              }"
+              [withTime]="true"
+            >
+            </mc-input-datepicker>
+          </div>
+        </div>
+      </ng-container>
+      <div class="mb-4">
+        <h5 class="mb-2">Język</h5>
+        <mc-input-select
+          name="textLanguage"
+          placeholder="Wybierz język formularza"
+          label="Wybierz język"
+          [options]="languages"
+          optionDisplay="name"
+          optionValue="id"
+          [(ngModel)]="formSettings.textLanguage"
+        >
+        </mc-input-select>
+      </div>
+
+      <div class="mb-4">
+        <h5 class="mb-2">Captcha</h5>
+        <mc-input-checkbox
+          *roleId="'captchaConfigEnabled'"
+          class="input-mb-1"
+          name="captchaEnabled"
+          [(ngModel)]="formSettings.captchaEnabled"
+          [disabled]="formVersion.state !== formVersionState.SKETCH"
+        >
+          Włącz captcha
+        </mc-input-checkbox>
+      </div>
+
+      <div class="mb-4">
+        <h5 class="mb-2">Sekcja podsumowania na stronie końcowej</h5>
+        <mc-input-checkbox
+          *roleId="'summaryPageConfig'"
+          class="input-mb-1"
+          name="summarySectionEnabled"
+          [(ngModel)]="formSettings.summarySectionEnabled"
+          [disabled]="formVersion.state !== formVersionState.SKETCH"
+        >
+          Włącz sekcje podsumowania
+        </mc-input-checkbox>
+      </div>
+      <ng-container *ngIf="formSettings.support">
+        <div class="mb-4">
+          <h5 class="mb-2">Wsparcie techniczne</h5>
+          <mc-input-text
+            *roleId="'supportEmailConfig'"
+            name="supportEmail"
+            label="Adres e-mail, na który będą wysyłane błędy"
+            [email]="true"
+            placeholder="example.support@gov.pl"
+            [(ngModel)]="formSettings.support.email"
+          ></mc-input-text>
+
+          <mc-input-checkbox
+            class="input-mb-1"
+            name="supportPayloadIncluded"
+            [(ngModel)]="formSettings.support.payloadIncluded"
+          >
+            Dołącz treść żądania
+          </mc-input-checkbox>
+        </div>
+      </ng-container>
+      <div class="mb-3">
+        <h5 class="mb-2">Konfiguracja stron końcowych</h5>
+
+        <label>Opis na stronie powodzenia</label>
+        <div class="mb-4">
+          <ckeditor
+            name="successPageInfo"
+            [config]="ckeditorConf"
+            [(ngModel)]="formSettings.successPageInfo"
+            *roleId="'configEndingPage'"
+          ></ckeditor>
+        </div>
+
+        <mc-input-text
+          name="successPageRedirectBtnUrl"
+          label="Link przycisku przekierowania na stronie powodzenia"
+          placeholder="https://adres.strony.com"
+          [(ngModel)]="formSettings.successPageRedirectBtnUrl"
+          *roleId="'configEndingPage'"
+        ></mc-input-text>
+
+        <mc-input-text
+          name="successPageRedirectBtnLabel"
+          label="Etykieta przycisku przekierowania na stronie powodzenia"
+          [(ngModel)]="formSettings.successPageRedirectBtnLabel"
+          *roleId="'configEndingPage'"
+        ></mc-input-text>
+
+        <label>Opis na stronie porażki</label>
+        <div class="mb-4">
+          <ckeditor
+            name="failPageInfo"
+            [config]="ckeditorConf"
+            [(ngModel)]="formSettings.failPageInfo"
+            *roleId="'configEndingPage'"
+          ></ckeditor>
+        </div>
+
+        <mc-input-text
+          name="failPageRedirectBtnUrl"
+          label="Link przycisku przekierowania na stronie porażki"
+          placeholder="https://adres.strony.com"
+          [(ngModel)]="formSettings.failPageRedirectBtnUrl"
+          *roleId="'configEndingPage'"
+        ></mc-input-text>
+
+        <mc-input-text
+          name="failPageRedirectBtnLabel"
+          label="Etykieta przycisku przekierowania na stronie porażki"
+          [(ngModel)]="formSettings.failPageRedirectBtnLabel"
+          *roleId="'configEndingPage'"
+        ></mc-input-text>
+      </div>
+
+      <div class="mb-3">
+        <h5 class="mb-2">Komunikaty</h5>
+        <label>Dodatkowy opis w przypadku zablokowanego formularza</label>
+        <div class="mb-4">
+          <ckeditor
+            name="blockedFormInfo"
+            [config]="ckeditorConf"
+            [(ngModel)]="formSettings.blockedFormInfo"
+            *roleId="'messagesForm'"
+          ></ckeditor>
+        </div>
+      </div>
+    </section>
+
+    <div class="mt-5">
+      <button
+        type="button"
+        class="btn btn-primary"
+        (click)="onSave()"
+        [disabled]="formVersion.state !== formVersionState.SKETCH || !generalSettingsForm.valid"
+        data-testid="saveGeneralSettings"
+      >
+        Zastosuj zmiany
+      </button>
+    </div>
+  </form>
+</ng-container>

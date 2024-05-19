@@ -1,0 +1,27 @@
+@import '../../../assets/styles/variables';
+
+.quick-popover {
+  display: flex;
+  align-items: center;
+  background: $white;
+  border-radius: $base-border-radius;
+  box-shadow: 0px 0px 8px 3px rgba(0, 0, 0, 0.3);
+  padding: 10px;
+  z-index: 9999;
+
+  .btn.btn-primary {
+    line-height: 1.2;
+    padding: 0.1rem 0.3rem;
+    font-size: 0.875rem;
+    background-color: $light-red;
+    border-color: $light-red;
+  }
+
+  .btn.btn-secondary {
+    line-height: 1.2;
+    padding: 0.1rem 0.3rem;
+    font-size: 0.875rem;
+    border-color: $light-red;
+    color: $light-red;
+  }
+}

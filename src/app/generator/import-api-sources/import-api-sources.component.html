@@ -1,0 +1,74 @@
+<h1 mat-dialog-title>Wybierz źródło danych z zewnętrznego API</h1>
+<section>
+  <div mat-dialog-content>
+    <h6 class="mb-2 mt-4" data-testid="externalDataHeader">URL zapytania do API</h6>
+    <input
+      type="text"
+      class="request-url mt-2 mb-2 d-block"
+      name="request-url"
+      [(ngModel)]="apiSourceConfig.apiSourceUrl"
+      placeholder="url"
+      aria-label="url źródła api"
+      (keyup)="getInterpolationMatches(apiSourceConfig.apiSourceUrl)"
+    />
+    <button style="margin: 0.5rem" class="btn btn-secondary d-block" type="button" (click)="getApiSourceData()">
+      Wykonaj
+    </button>
+
+    <p *ngIf="apiRequestError" class="text-red">Nie znaleziono</p>
+
+    <ng-container *ngIf="apiResponseData" class="mb-2">
+      <h6 class="mb-2 mt-4" data-testid="externalDataHeader">Wynik zapytania</h6>
+      <textarea
+        [rows]="apiResponseData ? 8 : 5"
+        class="json-config-response mt-2"
+        name="response-json"
+        [(ngModel)]="apiResponseData"
+      ></textarea>
+    </ng-container>
+
+    <h6 class="mb-2 mt-4" data-testid="externalDataHeader">konfiguracja danych</h6>
+    <ng-container *ngIf="dynamicFieldVariable">
+      <div class="api-source-checkbox">
+        <mc-input-checkbox
+          [(ngModel)]="isDynamicFieldVariable"
+          name="dynamicFieldVariable"
+          (change)="onDynamicVariableChange()"
+        >
+          Dynamiczna zmienna innego pola: <b>{{ dynamicFieldVariable }}</b>
+        </mc-input-checkbox>
+      </div>
+    </ng-container>
+    <div class="mb-2">
+      <h6 class="mb-2 mt-4" data-testid="externalDataHeader">Skrypt JSONata</h6>
+      <textarea
+        [rows]="apiResponseData ? 8 : 5"
+        class="json-config-response mt-2"
+        name="response-json"
+        [(ngModel)]="apiSourceConfig.jsonAtaQuery"
+      ></textarea>
+    </div>
+
+    <h6 class="mb-2 mt-4" data-testid="externalDataHeader">Klucz wartości wysyłanej</h6>
+    <input
+      type="text"
+      class="d-inline-block mt-2 mb-2"
+      name="value-property"
+      placeholder="klucz wartości wysyłanej"
+      aria-label="klucz wartości wysyłanej"
+      required
+      [(ngModel)]="apiSourceConfig.answerProperty"
+    />
+  </div>
+  <div mat-dialog-actions class="d-flex mt-4 mb-1">
+    <button class="btn btn-primary" mat-dialog-close>Anuluj</button>
+    <button
+      type="button"
+      class="btn btn-secondary ml-auto"
+      [disabled]="!apiSourceConfig.apiSourceUrl || !apiSourceConfig?.answerProperty || !apiSourceConfig.jsonAtaQuery"
+      (click)="onChoseApiSourceData()"
+    >
+      Dodaj
+    </button>
+  </div>
+</section>

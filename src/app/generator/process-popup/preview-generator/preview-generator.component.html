@@ -1,0 +1,23 @@
+<p class="mb-3" data-testid="chooseFormTypeParagraph">Wybierz typ wygenerowanego podglądu</p>
+<div class="d-flex mb-4">
+  <mc-input-radio
+    class="mr-5"
+    aria-label="Podgląd standardowy"
+    name="previewGeneratorType"
+    [disabled]="disableState"
+    [(ngModel)]="process.previewGeneratorType"
+    [value]="previewGeneratorType.STANDARD"
+  >
+    Podgląd standardowy
+  </mc-input-radio>
+  <mc-input-radio
+    class="mr-5"
+    aria-label="Podgląd dedykowany"
+    name="previewGeneratorType"
+    [disabled]="disableState"
+    [(ngModel)]="process.previewGeneratorType"
+    [value]="previewGeneratorType.CUSTOM"
+  >
+    Podgląd dedykowany
+  </mc-input-radio>
+</div>

@@ -1,0 +1,29 @@
+<mc-input-text
+  *ngIf="field.type === types.NUMBER"
+  stopPropagation
+  type="number"
+  name="confirmation_name_{{ field.techName }}"
+  [required]="field.validation?.required"
+  [(ngModel)]="confirmationTestVal"
+  [label]="field.confirmation.title"
+  [placeholder]="field.placeholder"
+  [digits]="{
+    max: field.validation?.maxValue ? field.validation?.maxValue : null,
+    min: field.validation?.minValue ? field.validation?.minValue : null
+  }"
+>
+</mc-input-text>
+
+<mc-input-text
+  *ngIf="field.type === types.TEXT_FIELD"
+  stopPropagation
+  type="text"
+  name="confirmation_name_{{ field.techName }}"
+  [required]="field.validation?.required"
+  [(ngModel)]="confirmationTestVal"
+  [label]="field.confirmation.title"
+  [placeholder]="field.placeholder"
+  [minlength]="field.validation?.minLength ? field.validation?.minLength : ''"
+  [maxlength]="field.validation?.maxLength ? field.validation?.maxLength : 255"
+>
+</mc-input-text>

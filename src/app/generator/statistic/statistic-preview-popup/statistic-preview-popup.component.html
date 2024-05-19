@@ -1,0 +1,35 @@
+<div mat-dialog-title class="d-flex justify-space-between mb-2">
+  <h2>Podgląd statystyki: {{ data.statisticDataDto.name }}</h2>
+  <button (click)="onNoClick()" class="pointer btn-clear close-popup-btn">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<div class="pb-3">
+  <ngx-charts-pie-chart
+    *ngIf="!data.statisticForm.rightGroupingQuestionFieldId"
+    [view]="view"
+    [results]="data.statisticDataDto.statisticData"
+    [gradient]="gradient"
+    [legend]="showLegend"
+    [legendPosition]="legendPosition"
+    [labels]="showLabels"
+    [doughnut]="isDoughnut"
+  >
+  </ngx-charts-pie-chart>
+  <ngx-charts-bar-horizontal-2d
+    *ngIf="data.statisticForm.rightGroupingQuestionFieldId"
+    [view]="view"
+    [results]="data.statisticDataDto.statisticData"
+    [gradient]="gradient"
+    [xAxis]="showXAxis"
+    [yAxis]="showYAxis"
+    [legend]="showLegend"
+    [legendPosition]="legendPosition"
+    [showXAxisLabel]="showXAxisLabel"
+    [showYAxisLabel]="showYAxisLabel"
+    [xAxisLabel]="data.rightFieldTitle"
+    [yAxisLabel]="data.leftFieldTitle"
+  >
+  </ngx-charts-bar-horizontal-2d>
+</div>

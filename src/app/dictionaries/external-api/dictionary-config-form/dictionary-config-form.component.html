@@ -1,0 +1,150 @@
+<form class="form" #form="ngForm">
+  <mc-input-text
+    label="Wpisz pełny adres URL do API słownika w celu pobrania pól"
+    placeholder="np. http://3.74.46.241:8091/app/teryt/api/v1/terc/voivodeships"
+    required
+    name="parametrizedUrl"
+    (ngModelChange)="onParametrizedUrlChanged($event)"
+    [(ngModel)]="parametrizedUrl"
+    data-testid="externalApiParametrizedUrl"
+  >
+  </mc-input-text>
+  <p class="alert alert-info" *ngIf="dictLevel !== 0">
+    Jeśli adres URL zawiera parametry, wstaw przykładowe poprawne wartości tych parametrów
+  </p>
+
+  <button
+    class="btn btn-primary mb-3"
+    (click)="onGetExternalApiFields()"
+    [disabled]="!form.valid || externalApiFields.length"
+    title="Pobierz pola słownika"
+    data-testid="externalApiFieldsButton"
+  >
+    Pobierz dostępne pola z wybranego API
+  </button>
+
+  <ng-container *ngIf="externalApiFields.length">
+    <div class="d-flex align-items-center">
+      <mc-input-select
+        class="mr-4"
+        [options]="externalApiFields"
+        name="labelPropertyName"
+        [(ngModel)]="config.labelPropertyName"
+        required
+        label="Opcje wyświetlane (etykiety)"
+        placeholder="Wybierz pole z API zewnętrznego"
+        data-testid="labelPropertyNameSelect"
+      >
+      </mc-input-select>
+      <mc-input-select
+        class="mr-4"
+        [options]="externalApiFields"
+        name="valuePropertyName"
+        [(ngModel)]="config.valuePropertyName"
+        required
+        label="Opcje wysyłane jako odpowiedzi"
+        placeholder="Wybierz pole z API zewnętrznego"
+        data-testid="valuePropertyNameSelect"
+      >
+      </mc-input-select>
+      <mc-input-select
+        [options]="externalApiFields"
+        name="paramPropertyName"
+        [(ngModel)]="config.paramPropertyName"
+        required
+        label="Opcje jako parametr kolejnego poziomu"
+        placeholder="Wybierz pole z API zewnętrznego"
+      >
+      </mc-input-select>
+    </div>
+    <div class="d-flex align-items-center">
+      <mc-input-text
+        class="mr-4"
+        [(ngModel)]="dictionaryLevelData.title"
+        name="defaultTitle"
+        label="Etykieta poziomu"
+        placeholder="Wpisz domyślną wartość etykiety"
+        data-testid="dictionaryLevelTitle"
+      ></mc-input-text>
+      <mc-input-text
+        [(ngModel)]="dictionaryLevelData.placeholder"
+        name="defaultPlaceholder"
+        label="Placeholder poziomu"
+        placeholder="Wpisz domyślną wartość placeholdera"
+        data-testid="dictionaryLevelPlaceholder"
+      ></mc-input-text>
+    </div>
+    <mc-input-checkbox
+      [(ngModel)]="additionalApiParams"
+      [disabled]="dictLevel === 0"
+      name="additionalApiParams"
+      data-testid="toggleAdditionalParamsCheckbox"
+    >
+      Czy URL do API zawiera parametry?
+    </mc-input-checkbox>
+    <p class="alert alert-info" *ngIf="dictLevel === 0" data-testid="noParamsOnFirstLevelInfo">
+      Na pierwszym poziomie słownika nie można użyć API z parametrami
+    </p>
+    <div *ngIf="additionalApiParams">
+      <mc-input-text
+        label="Podmień URL poniżej zachowując formę generyczną (z parametrami w nawiasach klamrowych {}) a następnie dodaj parametry wpisane do generycznej formy"
+        required
+        name="sourceUrl"
+        [(ngModel)]="config.sourceUrl"
+        data-testid="genericSourceUrl"
+      >
+      </mc-input-text>
+      <button
+        class="btn btn-sm mb-3"
+        (click)="addParameter()"
+        [disabled]="config.urlParams.length"
+        data-testid="addFirstParameterButton"
+      >
+        Dodaj pierwszy parametr
+      </button>
+      <ng-container *ngFor="let parameter of config.urlParams; let i = index">
+        <p>Parametr {{ i + 1 }}:</p>
+        <div class="d-flex align-items-center">
+          <mc-input-text
+            class="mr-4"
+            label="Nazwa parametru"
+            required
+            name="parameter_{{ i }}"
+            placeholder="np. voivodeshipId"
+            [(ngModel)]="parameter.paramName"
+            data-testid="paramNameInput"
+          >
+          </mc-input-text>
+          <mc-input-select
+            [options]="availableDictLevels"
+            label="Poziom rodzica w słowniku"
+            required
+            name="dictLevel_{{ i }}"
+            placeholder="Poziom jest numerowany od 0 (korzeń słownika)"
+            [(ngModel)]="parameter.dictLevel"
+            data-testid="dictLevelSelect"
+          >
+          </mc-input-select>
+        </div>
+        <button class="btn btn-sm mr-2" (click)="addParameter()">Dodaj kolejny parametr</button>
+        <button
+          class="btn-clear config-btn__remove"
+          type="button"
+          quickConfirm
+          popoverMessage="Czy na pewno chcesz usunąć ten parametr?"
+          (confirm)="removeParameter(i)"
+        >
+          <img class="mr-2" src="assets/icons/trash.svg" />
+          Usuń parametr
+        </button>
+        <hr />
+      </ng-container>
+    </div>
+    <button class="btn btn-sm mr-2" [disabled]="!form.valid" data-testid="saveDictionaryConfigForm" (click)="onSave()">
+      Zapisz
+    </button>
+    <button class="btn btn-secondary" data-testid="cancelDictionaryConfigForm" (click)="onCancel()" title="Anuluj">
+      Anuluj
+    </button>
+  </ng-container>
+</form>

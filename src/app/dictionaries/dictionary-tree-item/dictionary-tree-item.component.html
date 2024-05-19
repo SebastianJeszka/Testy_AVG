@@ -1,0 +1,34 @@
+<div class="dictionary-tree-item">
+  <div class="dictionary-tree-item__row">
+    <span data-testid="newDictionaryTreeItem">{{ data.name }}</span>
+    <button class="btn-clear btn-link ml-2" (click)="toggleActions()">
+      <svg class="dictionary-tree-item__icon" viewBox="0 0 24 24">
+        <path
+          fill="currentColor"
+          d="M6 12c0 1.657-1.343 3-3 3s-3-1.343-3-3 1.343-3 3-3 3 1.343 3 3zm9 0c0 1.657-1.343 3-3 3s-3-1.343-3-3 1.343-3 3-3 3 1.343 3 3zm9 0c0 1.657-1.343 3-3 3s-3-1.343-3-3 1.343-3 3-3 3 1.343 3 3z"
+        />
+      </svg>
+    </button>
+  </div>
+  <div class="dictionary-tree-item__row mt-1" *ngIf="showActions && !addNewChild">
+    <button
+      class="btn-clear btn-link dictionary-tree-item__action mr-2"
+      type="button"
+      (click)="toggleAddNewChild()"
+      data-testid="addTermButton"
+    >
+      Dodaj pozycję
+    </button>
+    <button
+      class="btn-clear btn-link dictionary-tree-item__action"
+      type="button"
+      (click)="removeItem()"
+      data-testid="removeTermButton"
+    >
+      Usuń pozycję
+    </button>
+  </div>
+  <div class="dictionary-tree-item__row mt-1" *ngIf="addNewChild">
+    <dictionary-item-form (save)="onAddNewDictionary($event)" (cancel)="toggleAddNewChild()"></dictionary-item-form>
+  </div>
+</div>

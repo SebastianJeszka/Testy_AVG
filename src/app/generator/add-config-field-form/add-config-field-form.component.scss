@@ -1,0 +1,14 @@
+@import '../../../assets/styles/variables';
+
+.activeChildren {
+  background-color: $dark-blue;
+
+  .mdc-list-item__primary-text,
+  .mdc-list-item__secondary-text {
+    color: #fff;
+  }
+}
+
+.mat-mdc-list-item.config-item {
+  cursor: pointer;
+}

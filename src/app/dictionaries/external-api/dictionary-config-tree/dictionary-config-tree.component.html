@@ -1,0 +1,47 @@
+<p
+  *ngIf="!dictionaryConfigService.data && !rootConfigFormVisible"
+  class="alert alert-info"
+  data-testid="emptyDictConfigInfo"
+>
+  Konfiguracja słownika pusta
+</p>
+
+<button
+  *ngIf="!externalConfig && !rootConfigFormVisible"
+  class="btn btn-sm mt-2"
+  (click)="showRootConfigForm()"
+  data-testid="addDictConfigButton"
+>
+  Dodaj konfigurację
+</button>
+
+<div *ngIf="externalConfig">
+  <div>
+    <ng-container *ngTemplateOutlet="recursiveConfig; context: { config: externalConfig, dictLevel: 1 }"></ng-container>
+  </div>
+
+  <ng-template #recursiveConfig let-config="config" let-dictLevel="dictLevel">
+    <dictionary-config-item
+      (add)="addChildConfig($event)"
+      (remove)="removeConfig()"
+      [config]="config"
+      [editState]="editState"
+      [addNewDictState]="addNewDictState"
+      [dictLevel]="dictLevel"
+      [dictionaryLevelsData]="dictionaryLevelsData"
+    >
+    </dictionary-config-item>
+    <hr *ngIf="config.childConfig" />
+    <div *ngIf="config.childConfig">
+      <ng-container
+        *ngTemplateOutlet="recursiveConfig; context: { config: config.childConfig, dictLevel: dictLevel + 1 }"
+      >
+      </ng-container>
+    </div>
+  </ng-template>
+</div>
+
+<div *ngIf="rootConfigFormVisible">
+  <dictionary-config-form [dictLevel]="0" (save)="saveRootConfigForm($event)" (cancel)="cancelRootConfigForm()">
+  </dictionary-config-form>
+</div>

@@ -1,0 +1,75 @@
+@import '../../../../assets/styles/variables';
+@import '../../../../assets/styles/helpers';
+@import '../../../../assets/styles/buttons';
+
+.accordionContainer {
+  font-weight: 300;
+
+  details {
+    border-top: $accordion-border;
+    border-bottom: $accordion-border;
+    padding: 0;
+
+    &[open] {
+      padding-bottom: $content-expanded-bottom-padding;
+
+      summary::before {
+        content: $icon-arrow-up;
+      }
+    }
+
+    &.accordion-detail {
+      > summary {
+        > span {
+          font-weight: 500;
+          font-size: 2.5em;
+        }
+      }
+    }
+
+    summary {
+      cursor: pointer;
+      font-weight: bold;
+      display: block;
+      font-size: 14px;
+      color: #0052a5;
+      margin: 0;
+      line-height: 1.1;
+      position: relative;
+
+      &.summary-icon {
+        display: flex;
+        > span {
+          vertical-align: middle;
+          flex: 1 1 auto;
+        }
+        > img {
+          width: $accordion-w;
+          margin-right: $accordion-w;
+          flex: 0 0 $accordion-w;
+        }
+
+        > .accordion-attribute__img-placeholder {
+          display: inline-block;
+          width: $accordion-w;
+          margin-right: $accordion-w;
+          flex: 0 0 $accordion-w;
+        }
+      }
+
+      &::before {
+        @include gov-icons;
+        content: $icon-arrow-down;
+        position: absolute;
+        top: 50%;
+        right: 0;
+        transform: translateY(-50%);
+        font-size: 1.6rem;
+      }
+
+      &::-webkit-details-marker {
+        display: none;
+      }
+    }
+  }
+}

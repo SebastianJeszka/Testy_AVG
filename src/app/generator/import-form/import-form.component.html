@@ -1,0 +1,34 @@
+<h1 mat-dialog-title>Importuj formularz z pliku</h1>
+
+<section>
+  <div mat-dialog-content class="import">
+    <form class="form" #form="ngForm">
+      <div class="mb-3">
+        <mc-input-text
+          minlength="3"
+          name="formTechName"
+          label="Nazwa techniczna nowego formularza (opcjonalnie)"
+          placeholder="Wpisz nazwę techniczą"
+          [(ngModel)]="formTechName"
+        ></mc-input-text>
+      </div>
+    </form>
+  </div>
+
+  <div mat-dialog-actions class="mb-1 import__actions">
+    <button class="btn btn-secondary mr-4" (click)="onNoClick()">Anuluj</button>
+    <button class="btn btn-primary" [class.btn-disabled]="!form.valid" type="button" (click)="fileInput.click()">
+      <input
+        #fileInput
+        hidden
+        (change)="importFile($event.target.files)"
+        (click)="$event.target.value = null"
+        type="file"
+        tabIndex="-1"
+        accept="['.json']"
+        [disabled]="!form.valid"
+      />
+      Wybierz plik z dysku
+    </button>
+  </div>
+</section>

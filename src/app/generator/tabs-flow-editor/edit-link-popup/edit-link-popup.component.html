@@ -1,0 +1,14 @@
+<h2 mat-dialog-title data-testid="editStepHeader">Edytuj krok</h2>
+
+<section mat-dialog-conent class="mat-dialog-content">
+  <add-link-form
+    *ngIf="link"
+    [edge]="link"
+    (newLink)="onAddNewLink($event)"
+    (cancel)="cancel($event)"
+    (removeLink)="onRemove()"
+    [formVersion]="formVersion"
+    [startNodeOptions]="startNodeOptions"
+    [finishNodeOptions]="finishNodeOptions"
+  ></add-link-form>
+</section>

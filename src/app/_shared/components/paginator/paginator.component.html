@@ -1,0 +1,49 @@
+<div>
+  <nav class="pagination" [class.d-none]="!length">
+    <div class="pagination__pages">
+      <a
+        (click)="previousPage()"
+        class="pagination__arrow-left"
+        [class.pagination__arrow--disabled]="previousButtonsDisabled()"
+        aria-label="Przejdź do poprzedniej strony wyników"
+      >
+        <span class="sr-only">Poprzednia strona wyników</span>
+      </a>
+      <div class="form">
+        <input
+          #pageInput
+          (blur)="enterPage($event.target.value)"
+          (keyup.enter)="enterPage($event.target.value)"
+          [value]="pageIndex + 1"
+          type="text"
+          aria-label="Jesteś na stronie 1 wyników Aby przejść do wybranej strony wyników Wpisz numer strony i naciśnij Enter"
+        />
+      </div>
+      <span>
+        z
+        <a
+          (click)="lastPage()"
+          class="pagination__total-count"
+          [attr.aria-label]="'Przejdź do ostatniej strony wyników ' + getNumberOfPages()"
+          >{{ getNumberOfPages() }}</a
+        >
+      </span>
+      <a
+        (click)="nextPage()"
+        class="pagination__arrow-right"
+        [class.pagination__arrow--disabled]="nextButtonsDisabled()"
+        aria-label="Przejdź do następnej strony wyników"
+      >
+        <span class="sr-only">Następna strona wyników</span>
+      </a>
+    </div>
+    <div class="pagination__rows">
+      <label for="pagination-rows">Liczba wierszy:</label>
+      <div class="pagination__rows-numbers" id="pagination-rows">
+        <a *ngFor="let size of pageSizeOptions" (click)="changePageSize(size)" [class.selected]="pageSize === size">
+          {{ size }} <span class="sr-only">Pokaż {{ size }} wierszy na stronę</span>
+        </a>
+      </div>
+    </div>
+  </nav>
+</div>

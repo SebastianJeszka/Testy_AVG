@@ -1,0 +1,39 @@
+@import '../../../../assets/styles/variables';
+
+.datepicker {
+  &__body {
+    height: 44px;
+    border: 1px solid $gray3;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2px 10px;
+    border-radius: 3px;
+    position: relative;
+    &.is-invalid {
+      border-bottom-color: $light-red;
+      margin-bottom: 0;
+      & + .invalid-feedback {
+        display: inline-block;
+        margin-bottom: 24px;
+      }
+    }
+  }
+  &__input {
+    height: 30px;
+    min-width: 100px;
+    flex-grow: 1;
+    border: none;
+    outline: none;
+    &:focus {
+      box-shadow: none;
+    }
+    &:disabled {
+      background-color: $gray4;
+    }
+  }
+  
+  &__input:disabled + mat-datepicker-toggle {
+    display: none;
+  }
+}

@@ -1,0 +1,139 @@
+<section>
+  <form #formSendingResults="ngForm" class="mt-4 form">
+    <mat-accordion class="example-headers-align" multi>
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Konfiguracja cyklicznego wysyłania wyników formularzy</mat-panel-title>
+        </mat-expansion-panel-header>
+        <div class="mb-3 mt-4 popup-content">
+          <h5 class="mb-2" data-testid="sendingResultsHeader">Konfiguracja cyklicznego wysyłania wyników formularzy</h5>
+
+          <p
+            class="text-red mb-3"
+            *ngIf="!sendingResultsConfig.enabled && sendingResultsConfig.formVersionId"
+            data-testid="sendingResultsDisabledInfo"
+          >
+            Cykliczne wysyłanie wyników WYŁĄCZONO
+          </p>
+
+          <div [style.max-width]="'300px'">
+            <mc-input-select
+              name="frequencyType"
+              placeholder="Wybierz"
+              label="Wybierz w jakie dni wysyłać raport wyników"
+              [options]="frequencyTypesOptions"
+              optionDisplay="name"
+              optionValue="id"
+              [(ngModel)]="sendingResultsConfig.frequencyType"
+              required
+            >
+            </mc-input-select>
+          </div>
+
+          <div class="mt-4">
+            <label>Podaj godziny wysyłki*</label>
+            <ngb-timepicker
+              name="sendingTime"
+              [(ngModel)]="sendingResultsConfig.sendingTime"
+              [hourStep]="1"
+              [minuteStep]="15"
+              [readonlyInputs]="true"
+              required
+            ></ngb-timepicker>
+          </div>
+
+          <div class="mt-4 pl-1">
+            <label>Wybierz typ raportu*</label>
+            <div class="d-flex mt-2">
+              <mc-input-radio
+                class="input-mb-1 mr-3"
+                name="scopeTypes"
+                [value]="reportScopeTypes.DIFFERENTIAL"
+                [(ngModel)]="sendingResultsConfig.scopeType"
+                required
+              >
+                RÓŻNICOWY (od ostatniej wysyłki)
+              </mc-input-radio>
+
+              <mc-input-radio
+                class=""
+                name="scopeTypes"
+                [value]="reportScopeTypes.ALL_DATA"
+                [(ngModel)]="sendingResultsConfig.scopeType"
+                required
+              >
+                CAŁOŚCIOWY (za cały czas)
+              </mc-input-radio>
+            </div>
+          </div>
+
+          <div class="mt-4 pl-1">
+            <mc-input-checkbox class="mt-3" name="zipEnabled" [(ngModel)]="sendingResultsConfig.zipEnabled">
+              Kompresować wyniki do zip
+            </mc-input-checkbox>
+          </div>
+
+          <div class="mt-4 pl-1">
+            <label class="mb-3">Lista adresów e-mail do wysłania wyników (opcjonalnie)</label>
+
+            <div
+              *ngFor="let email of sendingResultsConfig.recipientEmails; let i = index; trackBy: trackByIdx"
+              class="d-flex mt-0 mb-2"
+            >
+              <mc-input-text
+                name="emailForResults_{{ i }}"
+                class="input-mb-0"
+                required
+                label=""
+                placeholder="Wpisz email"
+                [(ngModel)]="sendingResultsConfig.recipientEmails[i]"
+                minlength="3"
+                [style.width]="'100%'"
+                email
+              >
+              </mc-input-text>
+
+              <button class="trash-button ml-4" (click)="onRemoveEmail(i)">
+                <img src="assets/icons/trash.svg" />
+              </button>
+            </div>
+
+            <div class="mt-3">
+              <button class="btn btn-secondary mb-4" (click)="onAddEmail()">Dodaj email</button>
+            </div>
+          </div>
+        </div>
+      </mat-expansion-panel>
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title> Lista odbiorców </mat-panel-title>
+        </mat-expansion-panel-header>
+        <recipient-list-settings
+          [sendingResultsConfig]="sendingResultsConfig"
+          [formVersion]="formVersion"
+        ></recipient-list-settings>
+      </mat-expansion-panel>
+    </mat-accordion>
+
+    <div class="g-row mr-0 mt-4">
+      <button
+        type="button"
+        class="btn mr-3"
+        (click)="onEnableReports()"
+        [disabled]="!formSendingResults.valid"
+        data-testid="enableSendingResultsButton"
+      >
+        {{ !sendingResultsConfig.enabled ? 'Włącz wysyłanie' : 'Zmień ustawienia' }}
+      </button>
+      <button
+        *ngIf="sendingResultsConfig.enabled"
+        type="button"
+        class="btn btn-secondary"
+        (click)="onDisableReports()"
+        data-testid="disableSendingResultsButton"
+      >
+        Wyłącz wysyłanie
+      </button>
+    </div>
+  </form>
+</section>

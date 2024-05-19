@@ -1,0 +1,24 @@
+.dictionary__items {
+  max-height: 350px;
+  overflow: auto;
+  overflow-x: hidden;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  padding: 20px;
+
+  li {
+    line-height: 20px;
+    padding: 3px;
+  }
+  ::ng-deep {
+    .mat-tree-node {
+      min-height: 28px;
+    }
+    .list-type {
+      border-radius: 50%;
+      background-color: #000;
+      width: 6px;
+      height: 6px;
+    }
+  }
+}

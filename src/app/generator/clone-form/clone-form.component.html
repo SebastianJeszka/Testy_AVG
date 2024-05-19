@@ -1,0 +1,33 @@
+<h1 mat-dialog-title data-testid="cloneFormHeader">Klonuj formularz</h1>
+
+<section>
+  <div mat-dialog-content class="clone-form">
+    <form class="form" #form="ngForm">
+      <div class="mb-3">
+        <mc-input-text
+          minlength="3"
+          required
+          name="formTechName"
+          label="Nazwa techniczna nowego formularza"
+          placeholder="Wpisz nazwę techniczą"
+          [(ngModel)]="formTechName"
+          data-testid="cloneFormTechName"
+        ></mc-input-text>
+      </div>
+    </form>
+  </div>
+
+  <div mat-dialog-actions class="mb-1 clone-form__actions">
+    <button class="btn btn-secondary mr-4" (click)="onNoClick()">Anuluj</button>
+    <button
+      class="btn btn-primary"
+      [class.btn-disabled]="!form.valid"
+      [disabled]="!form.valid"
+      type="button"
+      (click)="cloneForm()"
+      data-testid="cloneFormButton"
+    >
+      Klonuj formularz
+    </button>
+  </div>
+</section>

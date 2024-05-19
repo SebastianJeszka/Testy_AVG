@@ -1,0 +1,90 @@
+<div class="g-row">
+  <h1 class="gov-h1" data-testid="dictionaryHeader">Słowniki</h1>
+</div>
+
+<button
+  class="btn btn-secondary mt-5 mb-4"
+  type="button"
+  (click)="onClickAdd()"
+  data-testid="newDictionaryButton"
+  [disabled]="currentTab?.index === 1"
+  *roleId="'newDictionaryButton'"
+>
+  Dodaj słownik
+</button>
+
+<section mcAlert="#alert-container" mcAlertClose>
+  <div id="alert-container"></div>
+</section>
+
+<div class="pb-3">
+  <mat-tab-group mat-stretch-tabs="false" (selectedTabChange)="tabChange($event)">
+    <mat-tab label="Słowniki lokalne">
+      <app-table
+        (cellClicked)="onClickRecord($event)"
+        [options]="listOptions"
+        [headers]="listHeaders"
+        [data]="businessUnitData.dataSource.data"
+        [tableName]="'dictionaries-local'"
+        data-testid="dictionariesTable"
+        [childrenRows]="false"
+      >
+        <ng-template mcColumnDef let-row>
+          <a class="pointer pt-2 pb-2">
+            <b>
+              {{ row.name }}
+            </b>
+          </a>
+        </ng-template>
+        <ng-template mcColumnDef let-row>
+          <span class="pointer">
+            {{ row.description }}
+          </span>
+        </ng-template>
+        <ng-template mcColumnDef let-row>
+          <span class="pointer">
+            {{ row.children?.length || (row.externalConfig ? '-' : 0) }}
+          </span>
+        </ng-template>
+        <ng-template mcColumnDef let-row>
+          <span class="pointer">
+            {{ row.createDate | date : 'dd.MM.yyyy HH:mm' }}
+          </span>
+        </ng-template>
+      </app-table>
+    </mat-tab>
+    <mat-tab label="Słowniki globalne" [disabled]="globalDictionaryTab | async">
+      <app-table
+        (cellClicked)="onClickRecord($event)"
+        [options]="listOptions"
+        [headers]="listHeaders"
+        [data]="globalData.dataSource.data"
+        [tableName]="'dictionaries-global'"
+        data-testid="dictionariesTable"
+      >
+        <ng-template mcColumnDef let-row>
+          <a class="pointer pt-2 pb-2">
+            <b>
+              {{ row.name }}
+            </b>
+          </a>
+        </ng-template>
+        <ng-template mcColumnDef let-row>
+          <span class="pointer">
+            {{ row.description }}
+          </span>
+        </ng-template>
+        <ng-template mcColumnDef let-row>
+          <span class="pointer">
+            {{ row.children?.length || (row.externalConfig ? 'N/A' : 0) }}
+          </span>
+        </ng-template>
+        <ng-template mcColumnDef let-row>
+          <span class="pointer">
+            {{ row.createDate | date : 'dd.MM.yyyy HH:mm' }}
+          </span>
+        </ng-template>
+      </app-table>
+    </mat-tab>
+  </mat-tab-group>
+</div>

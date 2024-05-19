@@ -1,0 +1,62 @@
+@import '../../../assets/styles/variables';
+
+.field-form {
+  &__types ul {
+    display: flex;
+    flex-wrap: wrap;
+    margin: -5px 0;
+    margin-top: 1rem;
+
+    li {
+      margin: 5px;
+      width: calc(100% / 3 - 10px);
+      margin-bottom: -1.5rem;
+    }
+  }
+
+  &__label {
+    margin-bottom: -1rem;
+  }
+
+  &__options {
+    ul {
+      max-height: 400px;
+      overflow: auto;
+    }
+
+    li {
+      display: flex;
+      align-items: center;
+      min-height: 60px;
+      mc-input-text {
+        width: 60%;
+      }
+      .actions {
+        display: flex;
+        align-items: center;
+        height: 100%;
+        top: 0;
+      }
+      ::ng-deep {
+        .form-group {
+          margin-bottom: 0;
+        }
+      }
+    }
+  }
+}
+
+.actions {
+  color: $gray1;
+  position: relative;
+  top: 10px;
+
+  button {
+    color: inherit;
+  }
+}
+
+.field-form__add-new-option {
+  display: flex;
+  align-items: center;
+}

@@ -1,0 +1,27 @@
+<ng-template #defaultTemplate let-options="options">
+  <div class="quick-popover">
+    <p class="text-danger m-3 mr-3 mb-0">
+      <small>{{ options.popoverMessage }}</small>
+    </p>
+    <div class="confirm-btn-container" *ngIf="!options.hideCancelButton">
+      <button
+        type="button"
+        [mwlFocus]="true"
+        class="btn btn-primary mr-2"
+        (click)="options.onConfirm({ clickEvent: $event })"
+      >
+        {{ options.confirmText }}
+      </button>
+    </div>
+    <div class="confirm-btn-container" *ngIf="!options.hideConfirmButton">
+      <button type="button" class="btn btn-secondary mr-2" (click)="options.onCancel({ clickEvent: $event })">
+        {{ options.cancelText }}
+      </button>
+    </div>
+  </div>
+</ng-template>
+<ng-template
+  [ngTemplateOutlet]="options.customTemplate || defaultTemplate"
+  [ngTemplateOutletContext]="{ options: options }"
+>
+</ng-template>

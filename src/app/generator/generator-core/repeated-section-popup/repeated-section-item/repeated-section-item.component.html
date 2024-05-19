@@ -1,0 +1,50 @@
+<article class="pt-1 pl-3 pr-3 pb-3">
+  <div class="mb-0 d-flex justify-space-between">
+    <mc-input-text
+      stopPropagation
+      [required]="true"
+      [uniqueTechName]="field.id"
+      name="questionTechName_{{ index }}"
+      label="Nazwa techniczna pola"
+      [(ngModel)]="field.techName"
+      minlength="3"
+      [errorMessages]="{
+        techName: 'Taka nazwa techniczna już istnieje. Podaj unikalną nazwę techniczną'
+      }"
+      [disabled]="!allowTechNameChange"
+      [style.width]="'100%'"
+      class="input-mb-1"
+      (change)="onChangeTechName()"
+    ></mc-input-text>
+
+    <div *ngIf="field.type && field.techName">
+      <button stopPropagation class="pointer btn-clear ml-3 mt-3" type="button" [matMenuTriggerFor]="settings">
+        <mat-icon>settings</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <div class="mb-3">
+    <mc-input-select
+      *ngIf="!isFieldHasConstantId"
+      stopPropagation
+      name="inputType_{{ index }}"
+      placeholder="Wybierz typ pola"
+      [options]="fieldTypesOptions"
+      optionDisplay="name"
+      optionValue="id"
+      [(ngModel)]="field.type"
+      [required]="true"
+      (change)="onChangeType()"
+    >
+    </mc-input-select>
+    <message-label class="mb-4" *ngIf="isFieldHasConstantId">
+      Typ pola - <b>{{ fieldTypeLabels[field.type] }}</b>
+    </message-label>
+  </div>
+</article>
+<!-- settings menu -->
+<mat-menu #settings>
+  <button mat-menu-item (click)="onOpenEdition()">Edytuj</button>
+  <button mat-menu-item (click)="removeItem.emit(field.id)">Usuń pole</button>
+</mat-menu>

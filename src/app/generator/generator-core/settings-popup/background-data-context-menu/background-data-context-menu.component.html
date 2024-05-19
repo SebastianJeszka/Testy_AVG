@@ -1,0 +1,45 @@
+<ng-container>
+  <div class="d-flex flex-row">
+    <div>
+      <ul>
+        <li class="menu-item d-block highlight">Referencje do danych</li>
+        <li
+          *ngFor="let item of contextMenuItems; let i = index"
+          class="menu-link-{{ i }} menu-item d-block"
+          [ngClass]="{ picked: hoverIndex === i }"
+          (mouseenter)="enterFirst(i)"
+        >
+          {{ item.tabName }} <span class="arrow">▸</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="mr-auto second-menu" *ngFor="let item of contextMenuItems; let i = index">
+      <div *ngIf="hoverIndex === i">
+        <ul [ngStyle]="{ 'margin-top': hoverIndex * 40 + 'px' }" *ngFor="let proc of item.processes | keyvalue">
+          <li
+            class="menu-item"
+            [ngClass]="{ picked: aciveKey === proc.value.techName }"
+            (mouseenter)="enterSecond(proc.value.techName)"
+          >
+            {{ proc.value.techName }} <span class="arrow">▸</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="mr-auto second-menu" *ngFor="let item of contextMenuItems; let i = index">
+      <div [ngStyle]="{ 'margin-top': hoverIndex * 40 + 'px' }" *ngFor="let proc of item.processes | keyvalue">
+        <div *ngFor="let backgroundData of proc.value.backgroundData; let i = index">
+          <ul *ngFor="let prop of backgroundData.backgroundDataProp | keyvalue">
+            <div *ngIf="prop.value.techName === aciveKey">
+              <li class="menu-item" (click)="onContextMenuClick($event)">
+                {{ prop.value.displayName }}
+              </li>
+            </div>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>

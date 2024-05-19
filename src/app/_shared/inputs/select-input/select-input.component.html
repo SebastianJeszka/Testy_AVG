@@ -1,0 +1,27 @@
+<div class="form-group">
+  <label *ngIf="label" [for]="name">{{ label }}{{ required && label ? '*' : '' }}</label>
+  <mat-select
+    [placeholder]="placeholder"
+    [class.is-invalid]="invalid | async"
+    [(ngModel)]="value"
+    [id]="name"
+    [name]="name"
+    [multiple]="multiple"
+    [disabled]="disabled"
+    panelClass="gov-select-panel"
+  >
+    <mc-select-search-input (changeValue)="filterOptions($event)" [class.hidden-input]="!search">
+    </mc-select-search-input>
+    <mat-option
+      *ngFor="let option of filteredOptions | async"
+      [value]="optionValue ? option[optionValue] : option"
+      [disabled]="option.disabled ? option.disabled : false"
+      (click)="change.emit(optionValue ? option[optionValue] : option)"
+    >
+      <label [attr.sup]="option[supColumn]">{{ optionDisplay ? option[optionDisplay] : option }}</label>
+    </mat-option>
+  </mat-select>
+  <div class="invalid-feedback" *ngIf="invalid | async">
+    {{ failures | async }}
+  </div>
+</div>

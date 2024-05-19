@@ -1,0 +1,35 @@
+@import '../../../../assets/styles/variables';
+
+.state {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 4px 10px;
+  border-radius: 5px;
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: white;
+
+  &.SKETCH {
+    background-color: #999999;
+  }
+  &.PENDING {
+    background-color: #00d48a;
+  }
+  &.PUBLISHED {
+    background-color: #00d48a;
+  }
+  &.BLOCKED {
+    background-color: red;
+  }
+  &.ARCHIVED {
+    background-color: #777777;
+  }
+}
+
+@media (min-width: $min-tab) {
+  .state {
+    display: flex;
+  }
+}

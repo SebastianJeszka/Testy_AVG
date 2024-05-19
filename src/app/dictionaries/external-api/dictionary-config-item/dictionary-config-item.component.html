@@ -1,0 +1,133 @@
+<div class="config-item">
+  <div>
+    <form class="form" #form="ngForm">
+      <p class="mb-2 config-item__header" data-testid="dictItemHeader">Poziom słownika: {{ dictLevel - 1 }}</p>
+      <mc-input-text
+        label="URL do API"
+        [(ngModel)]="config.sourceUrl"
+        name="sourceUrl"
+        [disabled]="!editState"
+        data-testid="dictItemSourceUrl"
+      >
+      </mc-input-text>
+      <div class="d-flex align-items-center">
+        <mc-input-text
+          label="Opcje wyświetlane (etykiety)"
+          class="mr-4"
+          [(ngModel)]="config.labelPropertyName"
+          name="labelPropertyName"
+          [disabled]="!editState"
+          data-testid="dictItemLabelPropertyName"
+        ></mc-input-text>
+        <mc-input-text
+          label="Opcje wysyłane jako odpowiedzi"
+          [(ngModel)]="config.valuePropertyName"
+          name="valuePropertyName"
+          [disabled]="!editState"
+          data-testid="dictItemValuePropertyName"
+        ></mc-input-text>
+        <mc-input-text
+          *ngIf="config.paramPropertyName"
+          class="ml-4"
+          label="Opcje jako parametr kolejnego poziomu"
+          [(ngModel)]="config.paramPropertyName"
+          name="paramPropertyName"
+          [disabled]="!editState"
+        >
+        </mc-input-text>
+      </div>
+      <div class="d-flex align-items-center">
+        <mc-input-text
+          class="mr-4"
+          label="Etykieta poziomu"
+          [(ngModel)]="dictionaryLevelsData[dictLevel - 1].title"
+          name="defaultTitle"
+          [disabled]="!editState"
+        ></mc-input-text>
+        <mc-input-text
+          label="Placeholder poziomu"
+          [(ngModel)]="dictionaryLevelsData[dictLevel - 1].placeholder"
+          name="defaultPlaceholder"
+          [disabled]="!editState"
+        ></mc-input-text>
+      </div>
+
+      <ng-container *ngFor="let parameter of config.urlParams; let i = index">
+        <p>Parametr {{ i + 1 }}:</p>
+        <div class="d-flex align-items-center">
+          <mc-input-text
+            class="mr-4"
+            label="Nazwa parametru"
+            name="parameter_{{ i }}"
+            [disabled]="!editState"
+            [(ngModel)]="parameter.paramName"
+            data-testid="dictItemParamName"
+          >
+          </mc-input-text>
+          <mc-input-text
+            label="Poziom rodzica w słowniku"
+            name="dictLevel_{{ i }}"
+            type="number"
+            [disabled]="!editState"
+            [(ngModel)]="parameter.dictLevel"
+            data-testid="dictItemDictLevel"
+          >
+          </mc-input-text>
+        </div>
+      </ng-container>
+    </form>
+    <button
+      *ngIf="!config.childConfig && (editState || addNewDictState)"
+      class="btn-clear btn-link ml-2"
+      (click)="toggleActions()"
+      data-testid="toggleDictItemActions"
+    >
+      <svg class="config-item__icon" viewBox="0 0 24 24">
+        <path
+          fill="currentColor"
+          d="M6 12c0 1.657-1.343 3-3 3s-3-1.343-3-3 1.343-3 3-3 3 1.343 3 3zm9 0c0 1.657-1.343 3-3 3s-3-1.343-3-3 1.343-3 3-3 3 1.343 3 3zm9 0c0 1.657-1.343 3-3 3s-3-1.343-3-3 1.343-3 3-3 3 1.343 3 3z"
+        />
+      </svg>
+    </button>
+  </div>
+  <div class="mt-1" *ngIf="showActions && !childConfigFormVisible">
+    <button
+      class="btn-clear btn-link config-item__action mr-2"
+      type="button"
+      (click)="toggleShowConfigForm()"
+      data-testid="toggleShowConfigForm"
+    >
+      Dodaj kolejny poziom
+    </button>
+    <button
+      class="btn-clear btn-link config-item__action mr-2"
+      type="button"
+      (click)="removeCurrentConfig()"
+      data-testid="removeCurrentConfig"
+    >
+      Usuń aktualny poziom
+    </button>
+    <button
+      *ngIf="addNewDictState && !editState"
+      class="btn-clear btn-link config-item__action mr-2"
+      type="button"
+      (click)="toggleEditState()"
+      data-testid="editCurrentLevel"
+    >
+      Edytuj aktualny poziom
+    </button>
+    <button
+      *ngIf="addNewDictState && editState"
+      class="btn-clear btn-link config-item__action mr-2"
+      type="button"
+      (click)="toggleEditState()"
+      data-testid="disableCurrentLevelEdition"
+    >
+      Zablokuj edycję aktualnego poziomu
+    </button>
+  </div>
+  <div class="mt-1" *ngIf="childConfigFormVisible">
+    <dictionary-config-form [dictLevel]="dictLevel" (save)="saveChildConfig($event)" (cancel)="toggleActions()">
+    </dictionary-config-form>
+  </div>
+</div>

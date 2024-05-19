@@ -1,0 +1,214 @@
+<div class="g-row">
+  <h1 class="gov-h1" data-testid="formListHeader">Formularze (Ankiety)</h1>
+</div>
+
+<button
+  class="btn btn-secondary mt-5 mb-4 mr-3"
+  type="button"
+  [routerLink]="'new'"
+  data-testid="navigateToAddForm"
+  *roleId="'navigateToAddForm'"
+>
+  Dodaj formularz
+</button>
+
+<button
+  class="btn btn-secondary mt-5 mb-4"
+  type="button"
+  (click)="importForm()"
+  data-testid="importForm"
+  *roleId="'importForm'"
+>
+  Importuj formularz
+</button>
+
+<section mcAlert="#alert-container" mcAlertClose>
+  <div id="alert-container"></div>
+</section>
+
+<div class="pb-3">
+  <mat-tab-group mat-stretch-tabs="false">
+    <mat-tab label="Formularze">
+      <div class="d-flex align-items-center mt-3 mb-2">
+        <mc-input-select
+          class="mr-4"
+          name="redactorNameOptions"
+          placeholder="Wybierz właściciela"
+          label="Wybierz właściciela"
+          optionValue="id"
+          optionDisplay="name"
+          multiple
+          [options]="filterOptions.redactorNameOptions"
+          [(ngModel)]="activeFilters.redactorIds"
+          (ngModelChange)="onCustomSelectFiltersChanged()"
+        >
+        </mc-input-select>
+        <mc-input-select
+          class="mr-4"
+          name="formStateOptions"
+          placeholder="Wybierz status"
+          label="Wybierz status"
+          optionValue="id"
+          optionDisplay="name"
+          multiple
+          [options]="filterOptions.formStateOptions"
+          [(ngModel)]="activeFilters.formStates"
+          (ngModelChange)="onCustomSelectFiltersChanged()"
+        >
+        </mc-input-select>
+        <mc-input-select
+          name="formTypeOptions"
+          placeholder="Wybierz typ"
+          label="Wybierz typ"
+          optionValue="id"
+          optionDisplay="name"
+          multiple
+          [options]="filterOptions.formTypeOptions"
+          [(ngModel)]="activeFilters.formTypes"
+          (ngModelChange)="onCustomSelectFiltersChanged()"
+        >
+        </mc-input-select>
+      </div>
+
+      <app-table
+        (cellClicked)="onClickRecord($event)"
+        (filterChanged)="onAppTableFilterChanged($event)"
+        [options]="listOptions"
+        [headers]="listHeaders"
+        [data]="filteredActiveForms$ | async"
+        [childrenData]="childrenFormList"
+        [activeChildRow]="activeChildRow"
+        [tableName]="'forms-active'"
+        [childrenRows]="true"
+      >
+        <ng-template mcColumnDef let-row>
+          <mat-icon
+            class="pt-1 expand_more"
+            [ngClass]="{ expand_less: activeChildRow === row.id }"
+            *ngIf="row.hasChildren"
+            (click)="getTemplateChildren(row.id); $event.stopPropagation()"
+            >expand_more</mat-icon
+          >
+        </ng-template>
+        <ng-template mcColumnDef let-row>
+          <a class="forms-list__link pt-2 pb-2" data-testid="formsListLink">
+            <b>
+              {{ row.name }}
+            </b>
+          </a>
+        </ng-template>
+        <ng-template mcColumnDef="owner" let-row>
+          {{ row.redactorName }}
+        </ng-template>
+        <ng-template mcColumnDef="state" let-row>
+          {{ formStateLabels[row.state] }}
+        </ng-template>
+        <ng-template mcColumnDef="type" let-row>
+          {{ formTypeLabels[row.type] }}
+        </ng-template>
+        <ng-template mcColumnDef let-row>
+          {{ row.createDate | date : 'dd.MM.yyyy HH:mm' }}
+        </ng-template>
+        <ng-template mcColumnDef let-row>
+          <button
+            type="button"
+            title="Ustawienia"
+            aria-label="ustawienia"
+            class="settings pointer btn-clear"
+            [matMenuTriggerFor]="settings"
+            (click)="$event.stopPropagation()"
+          >
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #settings>
+            <button *ngIf="allowChangeOwnerPrivilege | async" mat-menu-item (click)="changeOwner(row)">
+              Zmień właściciela
+            </button>
+            <button mat-menu-item (click)="exportForm(row)" data-testid="exportFormButton">Eksportuj</button>
+            <button
+              class="text-red"
+              mat-menu-item
+              quickConfirm
+              popoverMessage="Czy na pewno chcesz usunąć cały formularz i wszystkie jego wersje? (jeśli formularz był opublikowany, przestanie być dostępny)"
+              (confirm)="removeForm(row)"
+              *roleId="'removeFormButton'"
+            >
+              Usuń formularz
+            </button>
+            <button mat-menu-item (click)="cloneForm(row)" data-testid="cloneFormButton" *roleId="'cloneFormButton'">
+              Klonuj formularz
+            </button>
+            <button mat-menu-item (click)="archiveForm(row)" *roleId="'archiveFormButton'">Archiwizuj formularz</button>
+          </mat-menu>
+        </ng-template>
+      </app-table>
+    </mat-tab>
+    <mat-tab label="Formularze archiwalne">
+      <app-table
+        (cellClicked)="onClickRecord($event)"
+        [options]="listOptions"
+        [headers]="listHeaders"
+        [data]="archivedForms$ | async"
+        [tableName]="'forms-archive'"
+        [childrenRows]="true"
+      >
+        <ng-template mcColumnDef let-row>
+          <mat-icon
+            class="pt-1 expand_more"
+            [ngClass]="{ expand_less: activeChildRow === row.id }"
+            *ngIf="row.hasChildren"
+            (click)="getTemplateChildren(row.id); $event.stopPropagation()"
+            >expand_more</mat-icon
+          >
+        </ng-template>
+        <ng-template mcColumnDef let-row>
+          <a class="forms-list__link pt-2 pb-2" data-testid="formsListLink">
+            <b>
+              {{ row.name }}
+            </b>
+          </a>
+        </ng-template>
+        <ng-template mcColumnDef let-row>
+          {{ row.redactorName }}
+        </ng-template>
+        <ng-template mcColumnDef let-row>
+          {{ formStateLabels[row.state] }}
+        </ng-template>
+        <ng-template mcColumnDef let-row>
+          {{ formTypeLabels[row.type] }}
+        </ng-template>
+        <ng-template mcColumnDef let-row>
+          {{ row.createDate | date : 'dd.MM.yyyy HH:mm' }}
+        </ng-template>
+        <ng-template mcColumnDef let-row>
+          <button
+            type="button"
+            title="Ustawienia"
+            aria-label="ustawienia"
+            class="settings pointer btn-clear"
+            [matMenuTriggerFor]="settings"
+            (click)="$event.stopPropagation()"
+          >
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #settings>
+            <button mat-menu-item (click)="exportForm(row)" data-testid="exportFormButton">Eksportuj</button>
+            <button
+              class="text-red"
+              mat-menu-item
+              quickConfirm
+              popoverMessage="Czy na pewno chcesz usunąć cały formularz i wszystkie jego wersje? (jeśli formularz był opublikowany, przestanie być dostępny)"
+              (confirm)="removeForm(row)"
+              *roleId="'removeFormButton'"
+            >
+              Usuń formularz
+            </button>
+            <button mat-menu-item (click)="cloneForm(row)" data-testid="cloneFormButton" *roleId="'cloneFormButton'">
+              Klonuj formularz
+            </button>
+          </mat-menu>
+        </ng-template>
+      </app-table>
+    </mat-tab>
+  </mat-tab-group>
+</div>

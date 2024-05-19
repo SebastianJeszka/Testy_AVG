@@ -1,0 +1,17 @@
+<div class="form-group">
+  <label [class.hidden]="!label" [for]="name"> {{ label }}{{ required && label ? '*' : '' }} </label>
+  <div style="height: 400px">
+    <ngx-monaco-editor
+      style="height: 300px"
+      #input
+      [name]="name"
+      [required]="required"
+      class="monaco-editor-like-input"
+      (onInit)="onMonacoEditorLoaded($event)"
+      [options]="editorOptions"
+      [(ngModel)]="value"
+      [attr.data-testid]="dataTestIdValue"
+    >
+    </ngx-monaco-editor>
+  </div>
+</div>

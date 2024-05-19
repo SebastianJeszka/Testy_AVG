@@ -1,0 +1,78 @@
+<h1 mat-dialog-title>Konfiguracja słownika z zewnętrznym API</h1>
+
+<section>
+  <div mat-dialog-content class="dictionary">
+    <form class="form" #editDictionaryForm="ngForm">
+      <div class="dictionary__title">
+        <h2 *ngIf="!isEditing" data-testid="configViewDictHeader">{{ dictionary.name }}</h2>
+        <mc-input-text
+          *ngIf="isEditing"
+          required
+          name="dictionaryName"
+          style="width: 80%"
+          label="Tytuł"
+          [(ngModel)]="dictionary.name"
+          data-testid="configViewDictName"
+        ></mc-input-text>
+        <span class="dictionary__date text-light-grey">
+          {{ dictionary.createDate | date: 'dd.MM.yyyy HH:mm' }}
+        </span>
+      </div>
+
+      <p class="mb-4" *ngIf="!isEditing" data-testid="configViewDictDescriptionTextBlock">
+        {{ dictionary.description }}
+      </p>
+      <div class="mb-3">
+        <mc-input-textarea
+          *ngIf="isEditing"
+          label="Opis"
+          name="description"
+          [(ngModel)]="dictionary.description"
+          required
+          data-testid="configViewDictDescriptionInput"
+        ></mc-input-textarea>
+      </div>
+    </form>
+
+    <h4 class="mb-1">Podgląd konfiguracji:</h4>
+    <div class="dictionary__items">
+      <dictionary-config-tree
+        [editState]="isEditing"
+        [config]="dictionary?.externalConfig"
+        [levelsData]="dictionary?.dictionaryLevelsData"
+        (configTreeChanged)="onConfigTreeChanged($event)"
+        (dictionaryLevelsDataChanged)="onDictionaryLevelsDataChanged($event)"
+      ></dictionary-config-tree>
+    </div>
+  </div>
+  <div mat-dialog-actions class="mb-1 dictionary__actions">
+    <div class="dictionary__actions--left">
+      <button class="btn btn-secondary" *ngIf="!isEditing" (click)="onNoClick()">Powrót</button>
+      <button *ngIf="isEditing" class="btn btn-secondary mr-3" (click)="onCancelEdit()">Anuluj zmiany</button>
+    </div>
+
+    <div class="dictionary__actions--right">
+      <button
+        class="btn btn-secondary mr-4"
+        quickConfirm
+        popoverMessage="Czy na pewno chcesz usunąć ten słownik?"
+        (confirm)="onRemoveDictionary()"
+        data-testid="configViewRemoveDict"
+      >
+        Usuń
+      </button>
+      <button *ngIf="!isEditing" class="btn btn-primary" data-testid="configViewEditDict" (click)="onClickEdit()">
+        Edytuj
+      </button>
+      <button
+        *ngIf="isEditing"
+        class="btn btn-primary"
+        (click)="onSave()"
+        [disabled]="!editDictionaryForm.valid"
+        data-testid="configViewSaveDict"
+      >
+        Zapisz
+      </button>
+    </div>
+  </div>
+</section>

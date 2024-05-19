@@ -1,0 +1,75 @@
+@import '../../../assets/styles/variables';
+
+.edge:hover {
+  cursor: pointer;
+  .line {
+    stroke: $dark-blue;
+  }
+  .text-path {
+    fill: $dark-blue;
+  }
+}
+
+.node:hover {
+  cursor: pointer;
+  rect {
+    fill: #999;
+  }
+}
+
+.legend {
+  align-items: center;
+  &__piece {
+    display: flex;
+    align-items: center;
+    & > div {
+      width: 20px;
+      height: 8px;
+    }
+  }
+}
+
+.node-div {
+  background: #ccc;
+  line-height: 30px;
+  display: flex;
+  min-width: 100%;
+  &:hover {
+    background: #999;
+  }
+  & > label {
+    text-align: center;
+    padding: 0 7px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    width: 100%;
+  }
+  & > .process {
+    padding: 0 3px;
+    display: flex;
+    align-items: center;
+    mat-icon {
+      display: none;
+      width: 18px;
+      height: 18px;
+      font-size: 18px;
+    }
+    &.enabled {
+      background-color: #b4a3c7;
+      mat-icon {
+        display: inline-block;
+      }
+    }
+  }
+}
+
+.isDisabled > a {
+  color: $gray1;
+  background-color: $gray4;
+  border-color: $gray1;
+
+  display: inline-block; /* For IE11/ MS Edge bug */
+  pointer-events: none;
+  text-decoration: none;
+}

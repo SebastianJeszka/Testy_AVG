@@ -1,0 +1,29 @@
+.border-bottom {
+  border-bottom: 1px solid #ccc;
+}
+.state-query-form {
+  max-height: 76vh;
+}
+.form-json-section {
+  width: 40%;
+}
+.form-json-container {
+  overflow: auto;
+  max-height: 72vh;
+  min-height: 72vh;
+  width: 100%;
+}
+.state-query-section {
+  border-left: 1px solid #ccc;
+  width: 58%;
+  mc-input-text {
+    width: 100%;
+  }
+}
+.editor-container {
+  height: 100%;
+}
+.editor-loader,
+.editor-container {
+  max-height: 400px;
+}

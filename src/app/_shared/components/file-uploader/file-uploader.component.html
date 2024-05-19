@@ -1,0 +1,42 @@
+<label *ngIf="uploadOptions.label">{{ uploadOptions.label }}</label>
+<div class="dropbox" (dragover)="$event.preventDefault()" (drop)="onDrop($event)">
+  <input
+    #fileInput
+    hidden
+    (change)="uploadFiles($event.target.files)"
+    type="file"
+    [multiple]="uploadOptions.multiple"
+    tabIndex="-1"
+    [accept]="extensionsList ? extensionsList : ''"
+  />
+  <p class="dropbox__instruction">Przeciągnij i upuść pliki na to pole albo załaduj z dysku</p>
+  <button
+    type="button"
+    [disabled]="fileLimit === 0 || disabled"
+    class="btn btn-secondary dropbox__button"
+    (click)="fileInput.click()"
+  >
+    DODAJ PLIK
+  </button>
+  <p *ngIf="uploadOptions.acceptedFormats" class="dropbox__info">Dopuszczalne formaty plików: {{ extensionsList }}</p>
+  <p class="dropbox__info">Maksymalny rozmiar: {{ uploadOptions.maxSize | fileSize: this.maxSizePrecision }}</p>
+  <p class="dropbox__info">{{ uploadOptions.fileLimitLabel }} {{ uploadOptions.fileLimit }}</p>
+</div>
+<ng-content></ng-content>
+<div *ngFor="let file of files; let i = index" class="file-info" [class.file-info--invalid]="!!file.error">
+  <div class="file-info__name">
+    <div>{{ file.data.name }}</div>
+    <div tabIndex="0">
+      <span *ngIf="file.error" class="gov-icon gov-icon--close" (click)="removeFile(i)" alt="Usuń plik"></span>
+    </div>
+  </div>
+  <div class="file-info__details">
+    <div *ngIf="!file.error" class="file-info__loading">
+      <div class="file-info__loading-inner" [ngStyle]="{ width: file.progress + '%' }"></div>
+    </div>
+    <div *ngIf="!file.error">{{ file.data.size | fileSize }}</div>
+    <div *ngIf="!file.error">{{ file.progress === 100 ? 99 : file.progress }}%</div>
+
+    <div *ngIf="file.error">{{ ERRORS_MAP[file.error] }}</div>
+  </div>
+</div>

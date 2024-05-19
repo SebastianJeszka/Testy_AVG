@@ -1,0 +1,17 @@
+<button class="btn-clear icon-button" type="button" (click)="buttonClick.emit()" [disabled]="disabled">
+  <div class="d-flex align-items-center icon-button__base">
+    <div class="icon-button__text text-uppercase">
+      <div
+        class="icon-button__circle mr-3"
+        [ngClass]="{
+          'icon-button__circle--outline': iconStyle === 'outline',
+          'icon-button__circle--size-small': iconSize === 'small'
+        }"
+        type="button"
+      >
+        <mat-icon>{{ icon }}</mat-icon>
+      </div>
+      <ng-content></ng-content>
+    </div>
+  </div>
+</button>

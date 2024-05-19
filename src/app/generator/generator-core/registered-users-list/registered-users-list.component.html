@@ -1,0 +1,62 @@
+<mat-tab-group mat-stretch-tabs="false">
+  <mat-tab label="Oczekujące">
+    <ng-container
+      *ngTemplateOutlet="
+        registeredUsersList;
+        context: { items: waitingList, status: registrationFormUserState.WAITING_FOR_APPROVAL }
+      "
+    ></ng-container>
+  </mat-tab>
+  <mat-tab label="Potwierdzenie">
+    <ng-container
+      *ngTemplateOutlet="
+        registeredUsersList;
+        context: { items: approvedList, status: registrationFormUserState.APPROVED }
+      "
+    ></ng-container>
+  </mat-tab>
+  <mat-tab label="Odrzucone">
+    <ng-container
+      *ngTemplateOutlet="
+        registeredUsersList;
+        context: { items: rejectedList, status: registrationFormUserState.REJECTED }
+      "
+    ></ng-container>
+  </mat-tab>
+</mat-tab-group>
+
+<ng-template #registeredUsersList let-items="items" let-status="status">
+  <app-table
+    [options]="listOptions"
+    [headers]="listHeaders"
+    [data]="items"
+    [tableName]="'registered-users'"
+    [childrenRows]="false"
+  >
+    <ng-template mcColumnDef let-row> {{ row.name }} </ng-template>
+    <ng-template mcColumnDef let-row> {{ row.surname }} </ng-template>
+    <ng-template mcColumnDef let-row> {{ row.email }} </ng-template>
+    <ng-template mcColumnDef let-row>
+      <div class="registered-users-list__buttons">
+        <button
+          class="btn-clear btn-link"
+          type="button"
+          *ngIf="[registrationFormUserState.WAITING_FOR_APPROVAL, registrationFormUserState.REJECTED].includes(status)"
+          (click)="setRegistrationUserState(row.id, registrationFormUserState.APPROVED)"
+        >
+          Akceptuj
+        </button>
+        <button
+          class="btn-clear btn-link ml-3"
+          type="button"
+          quickConfirm
+          popoverMessage="Czy na pewno chcesz usunąć ten parametr?"
+          (confirm)="setRegistrationUserState(row.id, registrationFormUserState.REJECTED)"
+          *ngIf="[registrationFormUserState.WAITING_FOR_APPROVAL, registrationFormUserState.APPROVED].includes(status)"
+        >
+          Odrzuć
+        </button>
+      </div>
+    </ng-template>
+  </app-table>
+</ng-template>

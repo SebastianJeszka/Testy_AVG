@@ -1,0 +1,62 @@
+@import '../../../../assets/styles/variables';
+
+.form-group {
+  label {
+    width: 100%;
+    position: relative;
+    &::after {
+      content: attr(unit);
+      position: absolute;
+      right: 0.75rem;
+      bottom: -2.25rem;
+    }
+    &.hidden {
+      margin-bottom: 0;
+      display: block;
+      &::after {
+        bottom: -2rem;
+      }
+    }
+  }
+  &.default {
+    ::ng-deep {
+      .mat-form-field-label-wrapper {
+        display: none;
+      }
+      .mat-form-field-infix {
+        border-top-width: 0px;
+        padding-bottom: 0.2em;
+      }
+      .mat-form-field-wrapper {
+        padding-bottom: 1em;
+      }
+    }
+  }
+}
+
+:host.input-sm .form-group {
+  label::after {
+    bottom: -1.65rem;
+  }
+}
+
+.monaco-editor-like-input {
+  border: 1px solid #b7b7b7;
+  border-radius: 0.25rem;
+  min-height: 350px;
+  height: 350px;
+  height: 100%;
+  .editor-container {
+    height: calc(100vh - 100px);
+  }
+}
+
+.editor-container {
+  height: 100%;
+}
+
+.editor-container,
+.monaco-editor {
+  height: 100%;
+  min-height: 200px;
+}

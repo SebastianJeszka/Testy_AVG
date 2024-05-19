@@ -1,0 +1,31 @@
+<div mat-dialog-title class="d-flex justify-space-between mb-2">
+  <h2 data-testid="settingsHeader">Ustawienia</h2>
+  <button data-testid="closePopupButton" (click)="onNoClick()" class="pointer btn-clear close-popup-btn">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<mat-tab-group
+  mat-stretch-tabs="false"
+  animationDuration="0"
+  [dynamicHeight]="false"
+  [selectedIndex]="0"
+  (selectedTabChange)="tabChange($event)"
+>
+  <mat-tab label="Ogólne ustawienia">
+    <general-settings
+      [formVersion]="formVersion"
+      *ngIf="currentTab?.tab.isActive || initialCurrentTabName === settingsPopupTabEnum.GENERAL"
+    ></general-settings>
+  </mat-tab>
+  <ng-container *ngIf="formVersion.id">
+    <mat-tab label="Wysyłanie wyników" [disabled]="sendResultsTabDisabled | async">
+      <sending-results [formVersion]="formVersion" *ngIf="currentTab?.tab.isActive"></sending-results>
+    </mat-tab>
+  </ng-container>
+  <ng-container *ngIf="formVersion.type !== formVersionTypeEnum.REGISTRATION">
+    <mat-tab label="Ustawienia dostępu do formularza" [disabled]="accessFormSettingsTabDisabled | async">
+      <access-form-settings [formVersion]="formVersion" *ngIf="currentTab?.tab.isActive"></access-form-settings>
+    </mat-tab>
+  </ng-container>
+</mat-tab-group>

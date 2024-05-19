@@ -1,0 +1,111 @@
+<message-label class="mb-2" *ngIf="disableChangesForCopy">
+  Jeśli jest potrzeba zmienić konfiguracje procesu dla bieżącej kopii strony, musi być wyłączona flaga procesu "Włącz
+  ten proces dla kopii" w oryginalnej stronie.
+</message-label>
+
+<mc-input-checkbox
+  class="mb-4"
+  name="enableProcess_{{ processExecuteTime }}"
+  [(ngModel)]="process.enabled"
+  (change)="onChangeProcessEnabling()"
+  [disabled]="disableState || disableChangesForCopy"
+  data-testid="processEnableCheckbox"
+>
+  Włącz proces
+</mc-input-checkbox>
+
+<ng-container *ngIf="process.enabled">
+  <mc-input-select
+    required
+    name="procesType_{{ processExecuteTime }}"
+    [options]="processTypesOptions"
+    placeholder="Wybierz typ procesu"
+    optionDisplay="name"
+    optionValue="id"
+    [(ngModel)]="process.type"
+    [ngStyle]="{ maxWidth: '200px' }"
+    class="mt-4 mb-4"
+    data-testid="processTypeSelect"
+    [disabled]="disableState || disableChangesForCopy"
+  >
+  </mc-input-select>
+
+  <redirect-process
+    *ngIf="process.type === processTypesLabels.REDIRECT"
+    [process]="process"
+    [processExecuteTime]="processExecuteTime"
+    [disableState]="disableState || disableChangesForCopy"
+  ></redirect-process>
+
+  <emails-process
+    *ngIf="process.type === processTypesLabels.DEFINE_EMAILS"
+    [process]="process"
+    [processExecuteTime]="processExecuteTime"
+    [disableState]="disableState || disableChangesForCopy"
+  ></emails-process>
+
+  <external-data-process
+    *ngIf="process.type === processTypesLabels.EXTERNAL_DATA"
+    [process]="process"
+  ></external-data-process>
+
+  <autocomplete-process-response
+    *ngIf="process.type === processTypesLabels.LOGIN"
+    [process]="process"
+    [processDataType]="ProcessDataType.LOGIN"
+    [disableState]="disableState || disableChangesForCopy"
+  ></autocomplete-process-response>
+
+  <preview-generator-process
+    *ngIf="process.type === processTypesLabels.PREVIEW_GENERATOR"
+    [process]="process"
+    [processExecuteTime]="processExecuteTime"
+    [disableState]="disableState || disableChangesForCopy"
+  ></preview-generator-process>
+
+  <user-verification-process
+    *ngIf="process.type === processTypesLabels.USER_VERIFICATION"
+    [process]="process"
+    [processExecuteTime]="processExecuteTime"
+    [disableState]="disableState || disableChangesForCopy"
+  ></user-verification-process>
+
+  <ticket-process
+    *ngIf="process.type === processTypesLabels.TICKET_VERIFICATION"
+    [process]="process"
+    [processExecuteTime]="processExecuteTime"
+    [disableState]="disableState || disableChangesForCopy"
+  ></ticket-process>
+
+  <mc-input-text
+    *ngIf="process.type"
+    minlength="3"
+    name="{{ process.type }}_{{ node.id }}"
+    uniqueTechName="{{ process.type }}"
+    label="Nazwa techniczna procesu"
+    placeholder="Wybierz nazwę techniczną procesu"
+    data-testid="processTechName"
+    [(ngModel)]="process.techName"
+    [errorMessages]="{
+      techName: 'Taka nazwa techniczna już istnieje. Podaj unikalną nazwę techniczną'
+    }"
+  ></mc-input-text>
+
+  <define-gov-register-process-response
+    *ngIf="process.type === processTypesLabels.DEFINE_GOV_REGISTER"
+    [process]="process"
+  ></define-gov-register-process-response>
+
+  <mc-input-checkbox
+    *ngIf="!node.data.isCopy"
+    class="mb-4 mt-3"
+    name="enableProcessForCopies_{{ processExecuteTime }}"
+    [(ngModel)]="process.forCopies"
+    [disabled]="disableState || disableChangesForCopy"
+    data-testid="processForCopiesCheckbox"
+  >
+    Włącz ten proces dla kopii (<small
+      ><i>po wlączeniu będą nadpisane istniejące parametry procesów w kopiach tej strony, jeśli istnieją</i></small
+    >)
+  </mc-input-checkbox>
+</ng-container>

@@ -1,0 +1,56 @@
+<div mat-dialog-title class="d-flex justify-space-between mb-2">
+  <h1 data-testid="fetchResultsHeader">Pobierz wyniki</h1>
+  <button data-testid="fetchResultsClosePopupButton" (click)="onCancel()" class="pointer btn-clear close-popup-btn">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<div mat-dialog-content class="dictionary">
+  <form class="form" #editDictionaryForm="ngForm">
+    <p>Wybierz za jaki okres potrzebujesz wyników</p>
+
+    <div class="d-flex align-items-center">
+      <p class="mr-3">od</p>
+      <mc-input-datepicker
+        name="minDate"
+        label="Wybierz date od"
+        [(ngModel)]="filters.dateFrom"
+        [disabled]="filters.forAllTime"
+        [maxDate]="filters.dateUntil || maxDate"
+      >
+      </mc-input-datepicker>
+
+      <p class="mr-3 ml-3">do</p>
+
+      <mc-input-datepicker
+        name="maxDate"
+        label="Wybierz date do"
+        [(ngModel)]="filters.dateUntil"
+        [disabled]="filters.forAllTime"
+        [maxDate]="maxDate"
+        [minDate]="filters.dateFrom ? filters.dateFrom : null"
+      >
+      </mc-input-datepicker>
+    </div>
+
+    <div>
+      <mc-input-checkbox
+        class="input-mb-1 input-mt-3"
+        name="dateFromNow"
+        [(ngModel)]="filters.forAllTime"
+        (change)="onChangeWholeTimeCheckbox($event)"
+      >
+        Za cały czas
+      </mc-input-checkbox>
+    </div>
+
+    <button
+      data-testid="fetchResultsDownloadButton"
+      class="btn btn-primary mb-5 mt-3"
+      type="button"
+      (click)="onFetchResults()"
+    >
+      Pobierz wyniki
+    </button>
+  </form>
+</div>

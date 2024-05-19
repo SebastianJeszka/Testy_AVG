@@ -1,0 +1,21 @@
+<div>
+  <mc-input-checkbox name="checkAll_{{ field.id }}" *ngIf="consentsConfig?.selectAllEnabled">
+    Zaznacz wszystkie
+  </mc-input-checkbox>
+
+  <ul>
+    <li *ngFor="let consent of consentsList; let i = index">
+      <mc-input-checkbox
+        class="input-mb-1"
+        name="checkCons_{{ field.id }}_{{ i }}"
+        [required]="consent.required"
+        [showRequiredMark]="false"
+      >
+        <div class="consent-text ml-1">
+          <span class="req-mark" *ngIf="consent.required">*</span>
+          <p [innerHTML]="consent.description | safeHtml" class="text-editor" data-testid="consentDescription"></p>
+        </div>
+      </mc-input-checkbox>
+    </li>
+  </ul>
+</div>

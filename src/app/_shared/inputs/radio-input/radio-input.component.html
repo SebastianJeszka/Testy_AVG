@@ -1,0 +1,23 @@
+<div class="form-group">
+  <div class="custom-radio">
+    <input
+      type="radio"
+      [value]="value"
+      [(ngModel)]="mValue"
+      [required]="required"
+      [disabled]="disabled"
+      [name]="name"
+      [class.is-invalid]="invalid | async"
+      [id]="radioId"
+      [attr.aria-required]="required"
+      [attr.aria-invalid]="invalid | async"
+      [attr.aria-describedby]="name + '-describedby'"
+    />
+    <label class="pointer" [for]="radioId">
+      <ng-content></ng-content>
+    </label>
+  </div>
+  <div [id]="name + '-describedby'" class="invalid-feedback" aria-live="off" *ngIf="invalid | async">
+    {{ failures | async }}
+  </div>
+</div>

@@ -1,0 +1,42 @@
+<label *ngIf="label">{{ label }}{{ required && label ? '*' : '' }}</label>
+<div class="datepicker__body form-group" [class.is-invalid]="invalid | async">
+  <ng-container *ngIf="withTime; else defaultDatePicker">
+    <input
+      placeholder="dd/mm/rrrr gg:mm:ss"
+      matInput
+      [ngxMatDatetimePicker]="dateTimePicker"
+      class="datepicker__input"
+      [(ngModel)]="value"
+      (dateChange)="dateChanged()"
+      [name]="name"
+      [id]="name"
+      [max]="maxDate"
+      [min]="minDate"
+      #input="ngModel"
+      [disabled]="disabled"
+    />
+    <mat-datepicker-toggle matSuffix [for]="dateTimePicker"></mat-datepicker-toggle>
+    <ngx-mat-datetime-picker #dateTimePicker></ngx-mat-datetime-picker>
+  </ng-container>
+  <ng-template #defaultDatePicker>
+    <input
+      placeholder="{{ format }}"
+      matInput
+      [matDatepicker]="picker"
+      class="datepicker__input"
+      [(ngModel)]="value"
+      (dateChange)="dateChanged()"
+      [name]="name"
+      [id]="name"
+      [max]="maxDate"
+      [min]="minDate"
+      #input="ngModel"
+      [disabled]="disabled"
+    />
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+  </ng-template>
+</div>
+<div [id]="name + '-describedby'" class="invalid-feedback" aria-live="off" *ngIf="invalid | async">
+  {{ failures | async }}
+</div>

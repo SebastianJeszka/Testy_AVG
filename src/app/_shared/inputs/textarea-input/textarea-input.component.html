@@ -1,0 +1,25 @@
+<div class="form-group">
+  <label [class.hidden]="!label" [for]="name"> {{ label }}{{ required && label ? '*' : '' }} </label>
+  <textarea
+    [id]="name"
+    [maxlength]="maxlength"
+    [name]="name"
+    [class.is-invalid]="invalid | async"
+    [class.read-only]="readOnly"
+    [placeholder]="placeholder"
+    [(ngModel)]="value"
+    [attr.aria-required]="required"
+    [attr.aria-invalid]="invalid | async"
+    [attr.aria-describedby]="name + '-describedby'"
+    [rows]="rows"
+    [disabled]="disabled || readOnly"
+  ></textarea>
+  <div class="d-flex justify-content-between">
+    <div>
+      <p [id]="name + '-describedby'" class="invalid-feedback d-block" *ngIf="invalid | async">
+        {{ failures | async }}
+      </p>
+    </div>
+    <p class="text-muted" *ngIf="showSymbolsNumber">{{ value?.length || 0 }} / {{ maxlength }}</p>
+  </div>
+</div>

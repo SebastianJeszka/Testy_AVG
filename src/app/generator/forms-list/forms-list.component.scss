@@ -1,0 +1,26 @@
+@import '../../../assets/styles/variables';
+
+::ng-deep {
+  .g-row {
+    margin-right: 0;
+  }
+}
+
+.settings {
+  display: flex;
+}
+
+.d-flex {
+  mc-input-select {
+    width: 100%;
+  }
+}
+
+.expand_more {
+  color: $dark-blue;
+  transition: all 0.3s ease-out;
+}
+
+.expand_less {
+  transform: rotateX(180deg);
+}

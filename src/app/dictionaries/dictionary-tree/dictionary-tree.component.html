@@ -1,0 +1,65 @@
+<p *ngIf="!_dictionaryDataController.data?.length && !addingOption" class="alert alert-info">Lista pusta</p>
+
+<mc-tree data-testid="newDictionaryTree" [data]="branchData">
+  <ng-template treePart="main" let-item>
+    <ng-container *ngIf="!editState; else editStateTemplate">
+      <span data-testid="newDictionaryTreeItem">{{ item.name }}</span>
+    </ng-container>
+    <ng-template #editStateTemplate>
+      <dictionary-tree-item
+        (add)="addSubTerm($event)"
+        (remove)="onRemoveTerm($event)"
+        [data]="item"
+        data-testid="newDictionaryItemForm"
+      ></dictionary-tree-item>
+    </ng-template>
+  </ng-template>
+</mc-tree>
+
+<!-- ADD new node to tree -->
+<div *ngIf="editState">
+  <dictionary-item-form
+    *ngIf="addingOption"
+    (save)="onSaveRootTerm($event)"
+    (cancel)="cancelSaveTerm()"
+    data-testid="newDictionaryItemForm"
+  ></dictionary-item-form>
+  <button class="btn btn-sm mt-2" (click)="onAddRootTerm()" data-testid="addRootTermButton">Dodaj pozycję</button>
+  <form class="form">
+    <div class="mt-3">
+      <mc-input-checkbox
+        *ngIf="branchData.length"
+        name="showLevelsDataConfigForm"
+        [(ngModel)]="showLevelsDataConfigForm"
+        data-testid="showLevelsDataConfigFormCheckbox"
+      >
+        Dodatkowa konfiguracja słowników hierarchicznych
+      </mc-input-checkbox>
+    </div>
+    <div *ngIf="showLevelsDataConfigForm">
+      <ng-container *ngFor="let dictionaryLevelData of dictionaryLevelsData; let i = index; last as last" class="mb-0">
+        <b data-testid="dictionaryLevelInfo">Poziom {{ i }}: </b>
+        <div class="d-flex align-items-center">
+          <mc-input-text
+            class="mr-4"
+            label="Etykieta poziomu"
+            placeholder="Wpisz domyślną wartość etykiety"
+            [(ngModel)]="dictionaryLevelData.title"
+            name="defaultTitle_{{ i }}"
+            [disabled]="!editState"
+            data-testid="dictionaryLevelDataTitle"
+          ></mc-input-text>
+          <mc-input-text
+            label="Placeholder poziomu"
+            placeholder="Wpisz domyślną wartość placeholdera"
+            [(ngModel)]="dictionaryLevelData.placeholder"
+            name="defaultPlaceholder_{{ i }}"
+            [disabled]="!editState"
+            data-testid="dictionaryLevelDataPlaceholder"
+          ></mc-input-text>
+          <hr *ngIf="!last" />
+        </div>
+      </ng-container>
+    </div>
+  </form>
+</div>

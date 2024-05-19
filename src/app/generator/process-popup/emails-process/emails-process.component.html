@@ -1,0 +1,186 @@
+<mat-tab-group
+  mat-stretch-tabs="false"
+  data-testid="emailsProcessTabGroup"
+  [selectedIndex]="activeTabIndex"
+  (selectedIndexChange)="onTabIndexChanged($event)"
+>
+  <mat-tab label="Adres dowolny">
+    <div class="pt-3 pl-2 pr-2 mb-5">
+      <h6 class="mb-3">Wysyłana treść</h6>
+
+      <div class="d-flex">
+        <mc-input-checkbox
+          class="mr-4"
+          [(ngModel)]="process.emailsDefineMessageTypeResults"
+          name="emailsDefineMessageTypeResults"
+          (change)="onEmailsDefineTypeChange()"
+          *roleId="'emailsDefineSendResults'"
+        >
+          Wynik
+        </mc-input-checkbox>
+        <mc-input-checkbox
+          [(ngModel)]="process.emailsDefineMessageTypePersonal"
+          name="emailsDefineMessageTypePersonal"
+          (change)="onEmailsDefineTypeChange()"
+        >
+          Spersonalizowana wiadomość
+        </mc-input-checkbox>
+      </div>
+
+      <div class="mb-4" *ngIf="process.emailsDefineMessageTypePersonal && activeTabIndex === 0">
+        <ckeditor name="personalMessageForDefinedEmails" [config]="ckeditor" [(ngModel)]="process.emailsDefineMessage">
+        </ckeditor>
+      </div>
+
+      <h6 class="mb-2" data-testid="fieldEmailsHeader">Email do wysłania</h6>
+
+      <message-label class="mb-2" *ngIf="!process.emailsDefineProcessData.length">
+        Nie dodano żadnego adresu e-mail.
+      </message-label>
+
+      <div
+        *ngFor="let email of process.emailsDefineProcessData; let i = index; trackBy: trackByIdx"
+        class="d-flex mb-2"
+      >
+        <mc-input-text
+          required
+          class="input-mb-0"
+          placeholder="Wpisz email"
+          name="emailForResults_{{ processExecuteTime }}_{{ i }}"
+          [(ngModel)]="process.emailsDefineProcessData[i]"
+          minlength="3"
+          [style.width]="'100%'"
+          [disabled]="disableState"
+          email
+          attr.data-testid="emailForResultInput_{{ i }}"
+        >
+        </mc-input-text>
+
+        <button
+          class="trash-button ml-4"
+          (click)="onRemoveEmails(i)"
+          [disabled]="disableState"
+          attr.data-testid="emailInputResultRemoveBtn_{{ i }}"
+        >
+          <img src="assets/icons/trash.svg" />
+        </button>
+      </div>
+
+      <button
+        class="btn btn-secondary mt-2 mb-4"
+        [class.mt-4]="process.emailsDefineProcessData.length > 0"
+        (click)="onAddEmail()"
+        [disabled]="disableState"
+        data-testid="addEmailInputProcessBtn"
+      >
+        Dodaj email
+      </button>
+    </div>
+  </mat-tab>
+
+  <mat-tab label="Adresy z pól formularza">
+    <div class="pt-3 pl-2 pr-2 mb-5">
+      <h6 class="mb-3">Wysyłana treść</h6>
+
+      <div class="d-flex">
+        <mc-input-checkbox
+          class="mr-4"
+          [(ngModel)]="process.emailsFieldsDefineMessageTypeResults"
+          name="emailsFieldsDefineMessageTypeResults"
+          (change)="onEmailsFieldsDefineTypeChange()"
+          *roleId="'emailsDefineSendResults'"
+        >
+          Wynik
+        </mc-input-checkbox>
+        <mc-input-checkbox
+          [(ngModel)]="process.emailsFieldsDefineMessageTypePersonal"
+          name="emailsFieldsDefineMessageTypePersonal"
+          (change)="onEmailsFieldsDefineTypeChange()"
+        >
+          Spersonalizowana wiadomość
+        </mc-input-checkbox>
+      </div>
+
+      <div class="mb-4" *ngIf="process.emailsFieldsDefineMessageTypePersonal && activeTabIndex === 1">
+        <ckeditor
+          name="personalMessageForEmailsFields"
+          [config]="ckeditor"
+          [(ngModel)]="process.emailsFieldsDefineMessage"
+        ></ckeditor>
+      </div>
+
+      <h6 class="mb-2" data-testid="fieldEmailsHeader">Pola email do wysłania wyników</h6>
+
+      <message-label
+        class="mb-2"
+        *ngIf="!process.emailsFieldsDefineProcessData || !process.emailsFieldsDefineProcessData.length"
+      >
+        Nie wybrano żadnego pola.
+      </message-label>
+
+      <div
+        *ngFor="let field of process.emailsFieldsDefineProcessData; let i = index; trackBy: trackByIdx"
+        class="d-flex"
+      >
+        <div class="mr-3" [style.width]="'200px'" *ngIf="tabs && fields">
+          <mc-input-select
+            required
+            class="input-mb-0"
+            name="page_{{ i }}"
+            [options]="tabs"
+            placeholder="Wybierz stronę"
+            optionDisplay="name"
+            optionValue="id"
+            data-testid="fieldEmailsPageSelect"
+            [(ngModel)]="field.tabId"
+            [disabled]="disableState"
+            (change)="onChangePage(field)"
+          >
+          </mc-input-select>
+        </div>
+
+        <div [style.width]="'200px'">
+          <mc-input-select
+            required
+            class="input-mb-0"
+            name="field_{{ i }}"
+            [options]="fields[field.tabId] ? fields[field.tabId] : []"
+            placeholder="Wybierz pole"
+            optionDisplay="name"
+            optionValue="id"
+            data-testid="fieldEmailsFieldSelect"
+            [(ngModel)]="field.fieldId"
+            [disabled]="disableState"
+            [alreadySelectedValue]="ifFieldIsSelected.bind(this)"
+            [index]="i"
+            [errorMessages]="{
+              alreadySelected: 'Ta wartość już wybrana'
+            }"
+          >
+          </mc-input-select>
+        </div>
+
+        <button class="trash-button ml-4" (click)="onRemoveField(i)" [disabled]="disableState">
+          <img src="assets/icons/trash.svg" />
+        </button>
+      </div>
+
+      <button
+        class="btn btn-secondary mt-2 mb-4"
+        (click)="onAddField()"
+        [disabled]="disableState"
+        data-testid="addFieldEmailProcessBtn"
+      >
+        Dodaj pole
+      </button>
+    </div>
+  </mat-tab>
+</mat-tab-group>
+
+<input type="hidden" [equalTo]="true" name="emailsDefineTypeChecked" [(ngModel)]="emailsDefineTypeChecked" />
+<input
+  type="hidden"
+  [equalTo]="true"
+  name="emailsFieldsDefineTypeChecked"
+  [(ngModel)]="emailsFieldsDefineTypeChecked"
+/>

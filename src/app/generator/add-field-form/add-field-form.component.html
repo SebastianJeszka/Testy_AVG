@@ -1,0 +1,725 @@
+<h2 mat-dialog-title>{{ isEdition ? 'Edytuj pole' : 'Dodaj nowe pole' }}</h2>
+<section class="form" *ngIf="field" mat-dialog-content data-testid="addFieldFormContent">
+  <!-- types -->
+  <div class="field-form__types mb-6 mt-4" *ngIf="!isEdition">
+    <p class="field-form__label mb-3">Wybierz typ pola</p>
+    <ul>
+      <li *ngFor="let type of fieldTypesOptions">
+        <mc-input-radio
+          (change)="chooseType(type)"
+          [value]="type.id"
+          name="type"
+          [disabled]="type.excluded?.includes(formType)"
+        >
+          {{ type.name }}
+        </mc-input-radio>
+      </li>
+    </ul>
+  </div>
+
+  <!-- info -->
+  <message-label class="mb-4" *ngIf="processTypeAndPropertyToAutocomplete">
+    Pole jest połączone z autouzupełnianiem - <b>{{ processTypeAndPropertyToAutocomplete }}</b>
+  </message-label>
+
+  <message-label class="mb-4" *ngIf="field.type && isEdition">
+    Typ pola - <b>{{ fieldTypeLabels[field.type] }}</b>
+  </message-label>
+
+  <form #addInputForm="ngForm" class="form field-form">
+    <div *ngIf="field.type">
+      <!-- title -->
+      <div class="mb-3">
+        <mc-input-text
+          name="questionTitle"
+          label="Etykieta"
+          [(ngModel)]="field.title"
+          minlength="3"
+          (keyup)="onChangeTitle()"
+          [disabled]="disabledByConfig.title"
+        ></mc-input-text>
+      </div>
+
+      <div class="mb-3">
+        <mc-input-text
+          #techNameField
+          required
+          [uniqueTechName]="field.id"
+          name="questionTechName"
+          [disabled]="!allowTechNameChange || disabledByConfig.techName"
+          label="Nazwa techniczna"
+          [(ngModel)]="field.techName"
+          minlength="3"
+          [errorMessages]="{
+            techName: 'Taka nazwa techniczna już istnieje. Podaj unikalną nazwę techniczną'
+          }"
+          (change)="onChangeTechName()"
+        >
+        </mc-input-text>
+      </div>
+
+      <ng-container
+        *ngIf="
+          (formType === formVersionTypes.TEMPLATE && field.type === fieldTypes.TEXT_FIELD) ||
+          (formType === formVersionTypes.TEMPLATE && field.type === fieldTypes.TEXTAREA) ||
+          (formType === formVersionTypes.TEMPLATE && field.type === fieldTypes.DATEPICKER) ||
+          (formType === formVersionTypes.TEMPLATE && field.type === fieldTypes.NUMBER) ||
+          (formType === formVersionTypes.TEMPLATE && field.type === fieldTypes.FILE_UPLOADER) ||
+          (formType === formVersionTypes.TEMPLATE && field.type === fieldTypes.CONSENT_SECTION)
+        "
+      >
+        <mc-input-checkbox [(ngModel)]="field.isCustomized" name="isCustomized">
+          Pole do profilowania
+        </mc-input-checkbox></ng-container
+      >
+      <ng-container *ngIf="field.type === fieldTypes.TEXT_FIELD || field.type === fieldTypes.TEXTAREA">
+        <div class="mb-3">
+          <mc-input-text
+            label="Wartość domyślna"
+            placeholder="{{ '{' + '{nazwa_techniczna_innego_pola}' + '}' }}"
+            name="defaultValue"
+            (contextMenuOutputEvent)="handleContextMenuEvent($event)"
+            [customContextMenu]="{
+              modifyDataKeyInModel: 'defaultValue',
+              contextMenuItems: contextMenuItems
+            }"
+            [(ngModel)]="field.defaultValue"
+          >
+          </mc-input-text>
+
+          <div class="mb-3">
+            <mc-input-text
+              *roleId="'raportLabel'"
+              name="reportLabel"
+              label="Etykieta do raportu"
+              [(ngModel)]="field.reportLabel"
+              minlength="3"
+              maxlength="30"
+            ></mc-input-text>
+          </div>
+
+          <mc-input-checkbox
+            [(ngModel)]="showGmlStructure"
+            name="showGmlStructure"
+            (change)="toggleShowFileStructure()"
+          >
+            Pokaż strukturę pliku GML
+          </mc-input-checkbox>
+          <div class="mt-3" *ngIf="showGmlStructure">
+            <ngx-json-viewer [json]="currentGmlStructure" [expanded]="false"></ngx-json-viewer>
+          </div>
+        </div>
+      </ng-container>
+
+      <!-- description -->
+      <div class="mb-4">
+        <h2 class="mb-3">Opis</h2>
+        <ckeditor name="description" [config]="ckeditor" [(ngModel)]="field.description"></ckeditor>
+      </div>
+
+      <div class="d-flex mb-4">
+        <ng-container *ngIf="field.type !== fieldTypes.TEXT_BLOCK && field.type !== fieldTypes.FILE_UPLOADER">
+          <mc-input-checkbox class="ml-3 input-mb-1" name="readOnlyField" [(ngModel)]="field.readOnly">
+            Pole tylko do odczytu
+          </mc-input-checkbox>
+        </ng-container>
+
+        <ng-container *ngIf="isFieldWithOptions(field.type)">
+          <mc-input-checkbox
+            class="ml-5 input-mb-1"
+            name="returnOnlySelectedOptions"
+            [(ngModel)]="field.returnOnlySelectedOptions"
+          >
+            Udostępniaj wyłącznie zaznaczone pozycje
+          </mc-input-checkbox>
+        </ng-container>
+      </div>
+
+      <ng-container *ngIf="field.type === fieldTypes.HTML_VIEWER">
+        <h2 class="mt-2 mb-3">Szablon podglądu</h2>
+        <mc-input-textarea
+          label="Wstaw szablon z nazwami technicznymi procesu generowania"
+          name="processTemplate"
+          [(ngModel)]="field.defaultValue"
+          placeholder="{{ '{' + '{nazwa_techniczna_procesu.htmlContent}' + '}' }}"
+          required
+        ></mc-input-textarea>
+
+        <h2 class="mt-2 mb-3">Pobierz podgląd jako:</h2>
+        <mc-input-select
+          stopPropagation
+          multiple="true"
+          name="downloadFileExtensions"
+          placeholder="Wybierz w jaki sposób zapisać wyświetlony podgląd"
+          [options]="downloadFileExtensionOptions"
+          optionDisplay="name"
+          optionValue="id"
+          [(ngModel)]="field.downloadFileExtensionTypes"
+        >
+        </mc-input-select>
+      </ng-container>
+
+      <!-- #region ifTypeAssigned -->
+      <ng-container *ngIf="field.type">
+        <!-- placeholder -->
+        <div class="mt-5" *ngIf="isPlaceholderAvailable && !field.dictionaryLevelsData?.length">
+          <dt>Tekst zastępczy (placeholder)</dt>
+          <mc-input-text name="questPlaceholder" [(ngModel)]="field.placeholder"></mc-input-text>
+        </div>
+
+        <!-- multiple -->
+        <div class="mt-2" *ngIf="field.type === fieldTypes.SELECT">
+          <mc-input-checkbox class="ml-3 input-mb-1" name="multiple" [(ngModel)]="field.multiple">
+            Pole wielokrotnego wyboru
+          </mc-input-checkbox>
+          <mc-input-checkbox class="ml-3" name="searchEnabled" [(ngModel)]="field.searchEnabled">
+            Włączyć pole do wyszukiwania
+          </mc-input-checkbox>
+        </div>
+
+        <!-- #region options -->
+        <div class="field-form__options mb-4 mt-3" *ngIf="isFieldWithOptions(field.type)">
+          <h2 class="mb-3">Opcje wyboru *</h2>
+          <p *ngIf="isSubmitted && !ifOptionsChosen()" class="text-red">
+            Musi być wybrana przynajmniej 1 opcja, zaimportowany słownik lub wkazane źródło API
+          </p>
+          <ul class="mb-3" *ngIf="!field.dictionaryName">
+            <li *ngFor="let o of options; let i = index" class="mb-0">
+              <span>{{ i + 1 }}.</span>
+              <mc-input-text
+                type="text"
+                [(ngModel)]="o.name"
+                name="option_{{ i }}"
+                class="ml-2"
+                [defaultStyles]="true"
+              ></mc-input-text>
+
+              <div class="actions">
+                <button class="pointer btn-clear ml-2" type="button" (click)="removeOption(i)">
+                  <mat-icon>delete_forever</mat-icon>
+                </button>
+
+                <mc-input-checkbox class="ml-3 input-mb-1" name="optionInput_{{ i }}" [(ngModel)]="o.ifShowInput"
+                  >dodatkowe pole tekstowe?</mc-input-checkbox
+                >
+              </div>
+
+              <!-- answers -->
+              <ng-container *ngIf="formType === formVersionTypes.QUIZ">
+                <mc-input-radio
+                  *ngIf="field?.type === fieldTypes.RADIO"
+                  class="ml-3"
+                  name="optionAnswer"
+                  [value]="o.name"
+                  [(ngModel)]="isAnswerForRadio"
+                >
+                  odpowiedź
+                </mc-input-radio>
+
+                <mc-input-checkbox
+                  *ngIf="field?.type === fieldTypes.CHECKBOX || field?.type === fieldTypes.SELECT"
+                  class="ml-3"
+                  name="optionAnswer_{{ i }}"
+                  [(ngModel)]="o.isAnswer"
+                >
+                  odpowiedź
+                </mc-input-checkbox>
+              </ng-container>
+            </li>
+
+            <li class="field-form__add-new-option" *ngIf="addingOption && currentOption">
+              <mc-input-text
+                type="text"
+                [(ngModel)]="currentOption.name"
+                name="option_for_save"
+                class="ml-2"
+                [autoFocus]="true"
+              ></mc-input-text>
+
+              <div class="actions">
+                <button class="pointer btn-clear ml-2" title="Usuń" type="button" (click)="cancelSaveOption()">
+                  <mat-icon>delete_forever</mat-icon>
+                </button>
+              </div>
+            </li>
+          </ul>
+          <ng-container *ngIf="!importedDictionary && !field.dictionaryName">
+            <button
+              *ngIf="!addingOption"
+              class="btn btn-sm d-block"
+              type="button"
+              (click)="addOption()"
+              data-testid="addOption"
+            >
+              Dodaj opcje
+            </button>
+            <button
+              *ngIf="addingOption && currentOption"
+              class="btn btn-sm d-block"
+              type="button"
+              [disabled]="!currentOption.name"
+              (click)="saveOption()"
+              data-testid="saveOption"
+            >
+              Zapisz opcje
+            </button>
+          </ng-container>
+
+          <div *ngIf="importedDictionary || field.dictionaryName" class="mt-3">
+            <b>Zaimportowany słownik: </b>
+            <p class="mb-0">
+              <span data-testid="usedDictionary">
+                {{ importedDictionary ? importedDictionary.name : field.dictionaryName }}
+              </span>
+              <a class="btn-link ml-3" (click)="onRemoveDictionary()">Usuń</a>
+            </p>
+          </div>
+
+          <button
+            class="btn btn-sm mt-3 d-block"
+            type="button"
+            data-testid="useDictionary"
+            (click)="onImportDictionariesList()"
+          >
+            {{ field.dictionaryName || importedDictionary ? 'Zmień słownik' : 'Zastosuj słownik' }}
+          </button>
+
+          <div *ngIf="field.apiSourceConfig?.apiSourceUrl" class="mt-3">
+            <b>Żródło API: </b>
+            <p class="mb-0">
+              <span>
+                {{ field.apiSourceConfig.apiSourceUrl }}
+              </span>
+              <a class="btn-link ml-3" (click)="onRemoveApiSource()">Usuń</a>
+              <ng-container *ngIf="field.apiSourceConfig?.apiSourceUrl">
+                <a class="btn-link ml-3" (click)="onImportApiSources()">Edytuj</a>
+              </ng-container>
+            </p>
+          </div>
+          <ng-container *ngIf="environment.nonProdFeatures">
+            <button
+              class="btn btn-sm mt-3 d-block"
+              type="button"
+              (click)="onImportApiSources()"
+              [disabled]="field.apiSourceConfig?.apiSourceUrl"
+            >
+              Dodaj źródło API
+            </button>
+          </ng-container>
+        </div>
+
+        <div *ngIf="field.dictionaryLevelsData?.length" class="mt-3">
+          <ng-container
+            *ngFor="let dictionaryLevelData of field.dictionaryLevelsData; let i = index; last as last"
+            class="mb-0"
+          >
+            <b data-testid="dictionaryLevelInfo">Poziom {{ i }}: </b>
+            <div class="d-flex align-items-center">
+              <mc-input-text
+                type="text"
+                [(ngModel)]="dictionaryLevelData.title"
+                name="level_title_{{ i }}"
+                label="Etykieta"
+                class="mr-4"
+                data-testid="dictionaryLevelTitle"
+              ></mc-input-text>
+              <mc-input-text
+                type="text"
+                [(ngModel)]="dictionaryLevelData.placeholder"
+                name="level_placeholder{{ i }}"
+                label="Tekst zastępczy (placeholder)"
+                data-testid="dictionaryLevelPlaceholder"
+              ></mc-input-text>
+            </div>
+            <hr *ngIf="!last" />
+          </ng-container>
+        </div>
+        <!-- #endregion options -->
+
+        <!-- #region validations -->
+        <div class="field-form__validations mt-4" *ngIf="field?.type && field?.type !== fieldTypes.TEXT_BLOCK">
+          <h2 class="mb-3">Walidacje</h2>
+          <dl>
+            <dt>Czy pole jest wymagane? *</dt>
+            <dd class="d-flex mb-3 mt-3">
+              <mc-input-radio
+                name="questRequired"
+                class="mr-4"
+                [value]="true"
+                [(ngModel)]="field.validation.required"
+                [required]="true"
+                [disabled]="disabledByConfig.validation.required"
+              >
+                Tak
+              </mc-input-radio>
+              <mc-input-radio
+                name="questRequired"
+                [value]="false"
+                [(ngModel)]="field.validation.required"
+                [required]="true"
+                [disabled]="disabledByConfig.validation.required"
+              >
+                Nie
+              </mc-input-radio>
+            </dd>
+
+            <ng-container *ngIf="field.type === fieldTypes.TEXT_FIELD || field.type === fieldTypes.TEXTAREA">
+              <dd>
+                <mc-input-text
+                  name="minLength"
+                  type="number"
+                  label="Minimalna długość znaków"
+                  positiveNumbers
+                  [(ngModel)]="field.validation.minLength"
+                  [disabled]="disabledByConfig.validation.minLength"
+                ></mc-input-text>
+              </dd>
+              <dd>
+                <mc-input-text
+                  name="maxLength"
+                  type="number"
+                  label="Maksymalna długość znaków"
+                  positiveNumbers
+                  [(ngModel)]="field.validation.maxLength"
+                  [disabled]="disabledByConfig.validation.maxLength"
+                ></mc-input-text>
+              </dd>
+            </ng-container>
+
+            <ng-container *ngIf="field.type === fieldTypes.NUMBER">
+              <dt class="mt-4">Maksymalna wartość</dt>
+              <dd>
+                <mc-input-text
+                  name="maxValue"
+                  [(ngModel)]="field.validation.maxValue"
+                  [disabled]="disabledByConfig.validation.maxValue"
+                ></mc-input-text>
+              </dd>
+
+              <dt>Minimalna wartość</dt>
+              <dd>
+                <mc-input-text
+                  name="minValue"
+                  [(ngModel)]="field.validation.minValue"
+                  [disabled]="disabledByConfig.validation.minValue"
+                ></mc-input-text>
+              </dd>
+            </ng-container>
+          </dl>
+
+          <ng-container *ngIf="field.type === fieldTypes.TEXT_FIELD">
+            <h2 class="mt-2 mb-3">Dodatkowe walidatory</h2>
+            <mc-input-select
+              stopPropagation
+              name="validators"
+              placeholder="Wybierz dodatkowy walidator"
+              [options]="validatorOptions"
+              optionDisplay="name"
+              [(ngModel)]="additionalValidator"
+              data-testid="additionalValidators"
+            >
+              <!-- (ngModelChange)="onModelChange($event, 0)" -->
+            </mc-input-select>
+
+            <mc-input-text
+              *ngIf="additionalValidator?.id === additionalValidators.PATTERN"
+              name="pattern"
+              label="Wpisz regexp"
+              [(ngModel)]="field.validation.pattern"
+              [disabled]="disabledByConfig.validation.pattern"
+            ></mc-input-text>
+          </ng-container>
+          <ng-container *ngIf="isAvailableOptionConfirmationRequired">
+            <mc-input-checkbox
+              *ngIf="isAvailableOptionConfirmationRequired"
+              class="ml-3 input-mb-1"
+              name="confirmationRequired"
+              [(ngModel)]="field.confirmation.isRequired"
+            >
+              Wymagane potwierdzenie wartości.
+            </mc-input-checkbox>
+            <mc-input-text
+              *ngIf="field.confirmation.isRequired"
+              name="title"
+              [required]="field.confirmation.isRequired"
+              label="Wpisz etykietę dla pola z potwierdzeniem"
+              [(ngModel)]="field.confirmation.title"
+            ></mc-input-text>
+          </ng-container>
+
+          <ng-container *ngIf="field.type === fieldTypes.DATEPICKER">
+            <p class="mb-0 mt-4">Data początkowa</p>
+            <div class="g-row align-items-center mr-0">
+              <div class="g-col-tab-6 g-col-12">
+                <mc-input-datepicker
+                  name="minDate"
+                  label="Wybierz datę"
+                  [(ngModel)]="field.validation.minDate"
+                  [maxDate]="field.validation.maxDate"
+                  [disabled]="field.validation.dateFromNow"
+                  [errorMessages]="{
+                    maxDate: 'Wybrana data musi być mniejsza od daty końcowej'
+                  }"
+                  [disabled]="disabledByConfig.validation.maxDate"
+                >
+                </mc-input-datepicker>
+              </div>
+              <div class="g-col-tab-4 g-col-12">
+                <mc-input-checkbox
+                  class="input-mb-1 input-mt-3"
+                  name="dateFromNow"
+                  [(ngModel)]="field.validation.dateFromNow"
+                  (change)="onChangeDateValidation($event, 'fromNow')"
+                  [disabled]="disabledByConfig.validation.dateFromNow"
+                  >Od teraz</mc-input-checkbox
+                >
+              </div>
+            </div>
+
+            <p class="mb-0 mt-4">Data końcowa</p>
+            <div class="g-row align-items-center mr-0">
+              <div class="g-col-tab-6 g-col-12">
+                <mc-input-datepicker
+                  name="maxDate"
+                  label="Wybierz datę"
+                  [(ngModel)]="field.validation.maxDate"
+                  [minDate]="field.validation.minDate"
+                  [disabled]="field.validation.dateUntilNow || field.validation.maxDate"
+                  [errorMessages]="{
+                    minDate: 'Wybrana data musi być większa od daty początkowej'
+                  }"
+                >
+                </mc-input-datepicker>
+              </div>
+              <div class="g-col-tab-4 g-col-12">
+                <mc-input-checkbox
+                  class="input-mb-1 input-mt-3"
+                  name="dateUntilNow"
+                  [(ngModel)]="field.validation.dateUntilNow"
+                  (change)="onChangeDateValidation($event, 'untilNow')"
+                  [disabled]="disabledByConfig.validation.dateUntilNow"
+                  >Do teraz</mc-input-checkbox
+                >
+              </div>
+            </div>
+          </ng-container>
+        </div>
+        <!-- #endregion validations -->
+
+        <!-- #region required fields info (for text blok) -->
+        <div class="mt-3" *ngIf="field.type === fieldTypes.TEXT_BLOCK">
+          <mc-input-checkbox
+            class="input-mb-1 input-mt-3"
+            name="showRequiredFieldInfo"
+            [(ngModel)]="field.showRequiredFieldsInfo"
+          >
+            Pokaż info o wymaganych polach
+          </mc-input-checkbox>
+        </div>
+        <!-- #endregion required fields info (for text blok) -->
+
+        <!-- #region file uploader config -->
+        <div *ngIf="field.type === fieldTypes.FILE_UPLOADER">
+          <h2 class="mt-2 mb-3">Dodatkowy zewnętrzny walidator</h2>
+          <mc-input-select
+            stopPropagation
+            name="externalValidations"
+            optionDisplay="name"
+            optionValue="id"
+            placeholder="Wybierz dodatkowy zewnętrzny walidator"
+            [options]="externalValidatorOptions"
+            [(ngModel)]="field.externalValidator"
+            (ngModelChange)="onExternalValidatorChange()"
+          >
+          </mc-input-select>
+          <mc-input-checkbox
+            name="verifySignature"
+            [(ngModel)]="field.validation.verifySignature"
+            (change)="onChangeVerifySignatureValidation()"
+            [disabled]="disabledByConfig.validation.verifySignature"
+          >
+            Weryfikuj podpis elektroniczny
+          </mc-input-checkbox>
+          <mc-input-text
+            type="number"
+            name="maxFilesNumber"
+            [disabled]="field.externalValidator"
+            [(ngModel)]="field.validation.maxFilesNumber"
+            label="Wpisz maksymalną ilość plików (max: 10)"
+            [digits]="{
+              max: 10,
+              min: 1
+            }"
+            [errorMessages]="{
+              min: 'Wartość musi być większa lub równa ' + 1,
+              max: 'Wartość musi być mniejsza lub równa ' + 10
+            }"
+            [disabled]="disabledByConfig.validation.maxFilesNumber"
+          >
+          </mc-input-text>
+
+          <mc-input-text
+            type="number"
+            name="maxFilesSize"
+            [(ngModel)]="field.validation.maxFileSize"
+            label="Wpisz maksymalny rozmiar pliku (w MB) (max: {{ maxFileSize }}MB)"
+            [digits]="{
+              max: 10,
+              min: 1
+            }"
+            [errorMessages]="{
+              min: 'Wartość musi być większa lub równa ' + 1,
+              max: 'Wartość musi być mniejsza lub równa ' + maxFileSize
+            }"
+            [disabled]="disabledByConfig.validation.maxFileSize"
+          >
+          </mc-input-text>
+
+          <mc-input-select
+            class="mr-2"
+            name="filesExtentions"
+            placeholder="Dostępne rozszerzenia plików"
+            [options]="extentionsList"
+            [(ngModel)]="field.validation.fileFormats"
+            (changed)="onChangedExtentions($event)"
+            [multiple]="true"
+            [disabled]="disabledByConfig.validation.fileFormats"
+          >
+          </mc-input-select>
+        </div>
+        <!-- #endregion file uploader config -->
+
+        <!-- #region consents section -->
+        <add-consents-section
+          *ngIf="field.type === fieldTypes.CONSENT_SECTION"
+          [field]="field"
+          [isTemplateForm]="formType === formVersionTypes.TEMPLATE"
+          (changeConf)="onChangeConsentsConfig($event)"
+        ></add-consents-section>
+        <!-- #endregion consents section -->
+
+        <!-- #region QUERY BUILDER -->
+        <!-- DON't delete -->
+        <div class="mt-4 mb-1">
+          <h2 class="mt-2 mb-3" data-testid="dynamicStatesHeader">Dynamiczne stany pola (zależności między polami)</h2>
+
+          <mc-input-checkbox
+            class="input-mb-1 input-mt-3"
+            name="enableDynamicStatesField"
+            data-testid="dynamicStatesFieldCheckbox"
+            [(ngModel)]="isOpenQueryBuilder"
+            (change)="onToggleDynamicStates()"
+          >
+            Ustaw dynamiczne stany pola
+          </mc-input-checkbox>
+
+          <div *ngIf="isOpenQueryBuilder">
+            <!-- Uncomment the code below if will be needed visual query builder for states of fields -->
+            <!-- <p class="mt-4">Ustaw stan wizualny używając query buildera</p> -->
+
+            <!-- Query builder states -->
+            <!-- <div class="d-flex">
+              <mc-input-select
+                class="mr-2"
+                name="state"
+                placeholder="Wybierz stan"
+                [options]="statesLabels"
+                optionDisplay="name"
+                [(ngModel)]="state"
+                [style.width]="'300px'"
+              >
+              </mc-input-select>
+              <query-builder
+                name="queryWhenShow"
+                [(ngModel)]="queryWhenShow"
+                [config]="queryBuilderConfig"
+                class="mt-3"
+                [ngModelOptions]="{ standalone: true }"
+              >
+                <ng-container
+                  *queryButtonGroup="
+                    let ruleset;
+                    let addRule = addRule;
+                    let addRuleSet = addRuleSet;
+                    let removeRuleSet = removeRuleSet
+                  "
+                >
+                  <button type="button" mat-button (click)="addRule()">
+                    + Dodaj regułę
+                  </button>
+                  <button type="button" mat-button (click)="addRuleSet()">
+                    + Dodaj zestaw reguł
+                  </button>
+                  <button type="button" mat-button (click)="removeRuleSet()">
+                    - Usuń zestaw reguł
+                  </button>
+                </ng-container>
+              </query-builder>
+            </div> -->
+
+            <p class="mt-4">Ustaw warunki stanu używając komendy jsonata</p>
+
+            <div class="d-flex mt-3 mb-3" *ngFor="let state of field.states; let i = index">
+              <mc-input-select
+                class="mr-2"
+                name="state_{{ i }}"
+                placeholder="Wybierz stan"
+                [options]="statesOptionItems"
+                optionDisplay="name"
+                optionValue="id"
+                [(ngModel)]="state.type"
+                [style.width]="'350px'"
+                [matTooltip]="getStateLabel(state.type)"
+                data-testid="dynamicStatesOfFieldSelect"
+              >
+              </mc-input-select>
+
+              <mc-input-text
+                class="mr-2"
+                type="text"
+                name="queryCommandInput_{{ i }}"
+                placeholder="Wpisz warunek stanu"
+                [(ngModel)]="state.query"
+                [style.width]="'100%'"
+                [style.max-width]="'750px'"
+                (click)="openStateQueryJsonEdition(state)"
+                [matTooltip]="state.query"
+                data-testid="stateQueryCommandInput"
+              >
+              </mc-input-text>
+
+              <div>
+                <button
+                  class="btn btn-primary"
+                  (click)="openStateQueryJsonEdition(state)"
+                  [style.min-width]="'205px'"
+                  data-testid="editQueryCommandBtn"
+                >
+                  Edytuj warunek
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- #endregion QUERY BUILDER -->
+      </ng-container>
+      <!-- #endregion ifTypeAssigned -->
+    </div>
+  </form>
+</section>
+
+<div class="mb-1 mt-4">
+  <p *ngIf="isSubmitted && !ifConsentsExist()" class="text-red text-right">Musi być dodana przynajmniej 1 zgoda</p>
+  <div mat-dialog-actions class="mb-1 mt-4 justify-end">
+    <button class="btn btn-secondary" type="button" (click)="closeAddField()">Anuluj</button>
+    <button
+      class="btn btn-primary ml-4"
+      type="submit"
+      (click)="saveInputForm()"
+      [class.btn-disabled]="!isFormValid || !field.type"
+      data-testid="submitAddFieldButton"
+    >
+      {{ isEdition ? 'Zapisz' : 'Dodaj' }}
+    </button>
+  </div>
+</div>

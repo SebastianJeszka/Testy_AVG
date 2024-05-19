@@ -1,0 +1,98 @@
+<mc-accordion [title]="accordionTitle" dataTestIdContext="FormHistoryToggle">
+  <section class="formHistory">
+    <app-table
+      (cellClicked)="selectFormVersion($event)"
+      [selectedRow]="selectedFormVersion"
+      [options]="listOptions"
+      [headers]="listHeaders"
+      [data]="formVersions"
+      [childrenRows]="false"
+    >
+      <ng-template mcColumnDef let-row>
+        <b> {{ row.versionMajor }}.{{ row.versionMinor }} </b>
+      </ng-template>
+      <ng-template mcColumnDef let-row>
+        {{ row.createDate | date : 'dd.MM.yyyy HH:mm' }}
+      </ng-template>
+      <ng-template mcColumnDef let-row>
+        {{ row.readyToPublishDate ? (row.readyToPublishDate | date : 'dd.MM.yyyy HH:mm') : '-' }}
+      </ng-template>
+      <ng-template mcColumnDef let-row>
+        <app-version-state [state]="row.state"></app-version-state>
+      </ng-template>
+      <ng-template mcColumnDef let-row>
+        {{ row.redactorName }}
+      </ng-template>
+      <ng-template mcColumnDef let-row>
+        <span
+          [class.isDisabled]="!row.linksAdded"
+          [matTooltip]="noLinksAddedMessage"
+          [matTooltipDisabled]="row.linksAdded"
+        >
+          <a
+            href="{{ previewFormUrl }}?formVersionId={{ row?.id }}&formId={{ row?.formId }}"
+            target="_blank"
+            class="not-link"
+            data-testid="formVersionPreview"
+            >Podgląd</a
+          >
+        </span>
+      </ng-template>
+      <ng-template mcColumnDef let-row>
+        <button
+          type="button"
+          title="Ustawienia"
+          aria-label="ustawienia"
+          class="settings pointer btn-clear"
+          data-testid="formVersionSettings"
+          [matMenuTriggerFor]="settings"
+          (click)="$event.stopPropagation()"
+        >
+          <mat-icon>more_vert</mat-icon>
+        </button>
+        <mat-menu #settings>
+          <ng-container *ngIf="user$ | async as user">
+            <ng-container *ngIf="row.state === formVersionStates.PENDING">
+              <button
+                mat-menu-item
+                quickConfirm
+                popoverMessage="Czy na pewno chcesz zablokować tę wersję formularza?"
+                (confirm)="blockFormVersion(row)"
+                *roleId="'blockFormVersionButton'"
+              >
+                Zablokuj
+              </button>
+            </ng-container>
+            <ng-container *ngIf="row.state === formVersionStates.BLOCKED">
+              <button
+                mat-menu-item
+                quickConfirm
+                popoverMessage="Czy na pewno chcesz odblokować tę wersję formularza?"
+                (confirm)="unblockFormVersion(row)"
+                *roleId="'unblockFormVersionButton'"
+              >
+                Odblokuj
+              </button>
+            </ng-container>
+            <button
+              class="text-red"
+              [disabled]="row.state !== formVersionStates.SKETCH || user.sub !== selectedFormVersion.redactorId"
+              mat-menu-item
+              quickConfirm
+              popoverMessage="Czy na pewno chcesz usunąć tę wersję formularza?"
+              (confirm)="removeFormVersion(row)"
+              data-testid="removeFormVersion"
+              *roleId="'removeFormButton'"
+            >
+              Usuń wersję
+            </button>
+            <button mat-menu-item (click)="openDistributionList(row)" *roleId="'openDistributionListButton'">
+              Lista dystrybucyjna
+            </button>
+            <button mat-menu-item (click)="exportFormVersion(row)">Eksportuj</button>
+          </ng-container>
+        </mat-menu>
+      </ng-template>
+    </app-table>
+  </section>
+</mc-accordion>

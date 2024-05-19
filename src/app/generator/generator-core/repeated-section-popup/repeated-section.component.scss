@@ -1,0 +1,6 @@
+.gridster-container {
+  border: 1px solid transparent;
+  &.invalid {
+    border-color: red;
+  }
+}

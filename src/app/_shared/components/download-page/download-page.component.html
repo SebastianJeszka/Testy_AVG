@@ -1,0 +1,5 @@
+<section class="inner-container" *ngIf="fileId">
+  <h2>Strona pobierania pliku</h2>
+  <p><b>Plik</b>: {{ fileId }}</p>
+  <button class="btn btn-primary" (click)="onDownload()">Pobierz</button>
+</section>

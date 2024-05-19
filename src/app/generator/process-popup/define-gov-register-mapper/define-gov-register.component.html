@@ -1,0 +1,148 @@
+<section>
+  <div class="mb-3 mt-4 popup-content">
+    <h5 class="mb-2" data-testid="define-register-mapper">
+      Konfiguracja przypisania wartości z rejestru do pól formularza
+    </h5>
+    <div class="d-flex align-items-center">
+      <div [style.min-width]="'400px'">
+        <mc-input-text
+          name="registerId"
+          label="Podaj id strony z rejestrem"
+          [(ngModel)]="process.answerRegisterConfiguration.registerId"
+          required
+        ></mc-input-text>
+      </div>
+      <div>
+        <button class="btn btn-secondary ml-3" (click)="downloadRegisterDefinition()">
+          Pobierz definicje rejestru
+        </button>
+      </div>
+    </div>
+  </div>
+  <div [style.width]="'400px'">
+    <mc-input-text
+      validAvailableTechName
+      [availableTechNames]="availableTechNames"
+      (contextMenuOutputEvent)="handleContextMenuEvent($event)"
+      [customContextMenu]="{
+        modifyDataKeyInModel: 'articleTitleIdentifier',
+        contextMenuItems: contextMenuItems
+      }"
+      required
+      label="Podaj tytuł jaki ma wygenerować artykuł"
+      name="title_article"
+      [(ngModel)]="process.answerRegisterConfiguration.articleTitleIdentifier"
+    ></mc-input-text>
+  </div>
+
+  <div
+    *ngFor="let item of registerFields; let i = index"
+    class="d-flex mb-2 register-process-mapper-field__row"
+    [style.width]="'100%'"
+  >
+    <div [style.width]="'250px'">
+      <mc-input-text
+        required
+        name="propFromMap_{{ i }}"
+        placeholder="{{ item.registerColumnName }}"
+        [(ngModel)]="item.registerColumnName"
+        [disabled]="true"
+      >
+      </mc-input-text>
+    </div>
+
+    <div class="mr-3 ml-3 mt-2">
+      <span class="gov-icon gov-icon--trend-rising"></span>
+    </div>
+    <div
+      class="d-flex mb-2 register-process-mapper-field__row"
+      *ngIf="item.fieldIdentificationType === fieldIdentificationTypes.TECHNAME; else compositionMode"
+    >
+      <div [style.width]="'200px'" *ngIf="tabs && fields">
+        <mc-input-select
+          required
+          name="page_{{ i }}"
+          [options]="tabs"
+          placeholder="Wybierz stronę"
+          optionDisplay="name"
+          optionValue="id"
+          [(ngModel)]="item.tabId"
+        >
+        </mc-input-select>
+      </div>
+
+      <div class="ml-3" [style.width]="'200px'">
+        <mc-input-select
+          required
+          name="field_{{ i }}"
+          [options]="fields[item.tabId] || []"
+          placeholder="Wybierz pole"
+          optionDisplay="name"
+          optionValue="name"
+          [(ngModel)]="item.fieldIdentifier"
+        >
+        </mc-input-select>
+      </div>
+      <!-- if field is repeating section type -->
+      <div
+        *ngIf="isRepeatingSectionFieldType(fields[item.tabId], item.fieldIdentifier)"
+        class="ml-3"
+        [style.width]="'200px'"
+      >
+        <mc-input-select
+          required
+          multiple
+          name="field_rs_{{ i }}"
+          [options]="repeatingSectionFields[item.fieldIdentifier] || []"
+          placeholder="Wybierz pola"
+          optionDisplay="name"
+          optionValue="name"
+          [(ngModel)]="item.repeatingSectionFieldsIdentifiers"
+        >
+        </mc-input-select>
+        <mc-input-checkbox [(ngModel)]="item.blockPresentationData" name="blockPresentationData_{{ i }}">
+          Prezentacja blokowa
+        </mc-input-checkbox>
+      </div>
+    </div>
+
+    <ng-template #compositionMode>
+      <div [style.width]="'300px'">
+        <mc-input-text
+          validAvailableTechName
+          [availableTechNames]="availableTechNames"
+          [customContextMenu]="{
+            modifyDataKeyInModel: 'answersRegisterFields.' + i + '.fieldIdentifier',
+            contextMenuItems: contextMenuItems
+          }"
+          (contextMenuOutputEvent)="handleContextMenuEvent($event)"
+          required
+          name="composition_techName_{{ i }}"
+          placeholder="Nazwy techniczne w kompozycji"
+          [(ngModel)]="item.fieldIdentifier"
+        >
+        </mc-input-text>
+      </div>
+    </ng-template>
+    <div [style.width]="'200px'">
+      <button class="btn btn-secondary ml-3" (click)="onChangeMode(item)">
+        {{ item.fieldIdentificationType === fieldIdentificationTypes.TECHNAME ? 'Kompozycja' : 'Lista wyboru' }}
+      </button>
+    </div>
+  </div>
+
+  <h6 class="mb-2" data-testid="register-add-file-upload-label">
+    Zaznacz pola, które chcesz aby zostały dołączone do rejestru
+  </h6>
+  <div class="d-flex flex-wrap pb-5">
+    <mc-input-checkbox
+      *ngFor="let item of availableFileUploadFields"
+      class="input-mb-1 input-mt-4 mb-2 mr-4"
+      name="{{ item.techName }}"
+      (change)="toggleClickAddUploadFileInput(item)"
+      [checked]="selectedFileInput.includes(item.techName)"
+    >
+      {{ item.title }}({{ item.techName }})
+    </mc-input-checkbox>
+  </div>
+</section>

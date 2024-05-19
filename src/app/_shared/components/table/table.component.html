@@ -1,0 +1,236 @@
+<div class="p-relative" [class.mc-loader]="loading" [ngClass]="{ tableWithChildrenRows: childrenRows }">
+  <ng-container *ngIf="options.filter">
+    <div class="form g-row">
+      <div class="g-col-12 g-col-tab-8 g-col-desk-6">
+        <label class="mt-3 mr-2">{{ options.filterLabel }}</label>
+        <div class="search-right-loupe">
+          <input
+            class="search__input"
+            [class.search__input--without-clear]="!filter.length"
+            [(ngModel)]="filter"
+            [disabled]="loading"
+            type="text"
+            [placeholder]="options.filterPlaceholder"
+            (keyup)="filterKeyUp.next($event)"
+            aria-label="Naciśnij tabulator aby móc wyczyścić wyszukiwarkę."
+          />
+          <button
+            type="button"
+            (click)="clearFilter()"
+            class="search-right-loupe__erase"
+            [style.display]="filter.length ? 'inline-block' : 'none'"
+          >
+            <span class="sr-only">Wyczyść pole edycyjne / szukaną frazę</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+  <div class="search__counter" *ngIf="options.showCount">
+    Liczba elementów: <b>{{ dataLength }}</b>
+  </div>
+  <table class="mc-table">
+    <tr class="header-row">
+      <ng-container *ngIf="childrenRows; else noChildren">
+        <div class="row" [ngClass]="{ 'd-flex': childrenRows }">
+          <ng-container *ngFor="let header of headers; let i = index">
+            <th
+              class="header-cell flex-basis-100"
+              (click)="header.sortable && changeSorting(header, sortColumn?.direction)"
+              [style]="header.headerStyle"
+              [style.width]="header.width"
+              [style.maxWidth]="header.maxWidth"
+              [class.sortable-header]="header.sortable"
+              [class.sortable-header--active]="sortColumn?.name === header.name"
+              [class.sortable-header--revert]="sortColumn?.name === header.name && sortColumn?.direction === 'DESC'"
+              [ngClass]="'th-' + i"
+            >
+              <div>
+                {{ header.display || (header.headerIcon ? '' : header.name) }}
+                <img class="ico" *ngIf="header.headerIcon" [src]="header.headerIcon" alt="" />
+              </div>
+            </th>
+          </ng-container>
+        </div>
+      </ng-container>
+      <ng-template #noChildren>
+        <ng-container *ngFor="let header of headers; let i = index">
+          <th
+            class="header-cell flex-basis-100"
+            (click)="header.sortable && changeSorting(header, sortColumn?.direction)"
+            [style]="header.headerStyle"
+            [style.width]="header.width"
+            [style.maxWidth]="header.maxWidth"
+            [class.sortable-header]="header.sortable"
+            [class.sortable-header--active]="sortColumn?.name === header.name"
+            [class.sortable-header--revert]="sortColumn?.name === header.name && sortColumn?.direction === 'DESC'"
+            [ngClass]="'th-' + i"
+          >
+            <div>
+              {{ header.display || (header.headerIcon ? '' : header.name) }}
+              <img class="ico" *ngIf="header.headerIcon" [src]="header.headerIcon" alt="" />
+            </div>
+          </th> </ng-container
+      ></ng-template>
+    </tr>
+
+    <tr *ngIf="!loading && !dataLength">
+      <td [attr.colspan]="headers.length" class="no-records-cell">Brak wyników</td>
+    </tr>
+    <tr *ngIf="loading && !dataLength">
+      <td [attr.colspan]="headers.length" class="no-records-cell" data-testid="loadingFormsCell">Ładowanie danych</td>
+    </tr>
+
+    <tr
+      class="table-row pointer"
+      [ngClass]="{ 'd-flex': childrenRows, 'f-direction-column': childrenRows }"
+      [class.table-row--clicked]="row === selectedRow"
+      *ngFor="let row of displayData"
+    >
+      <ng-container *ngIf="childrenRows; else noChildrenRows">
+        <div
+          class="row"
+          [ngClass]="{ activeChildren: childrenData && row.id === activeChildRow, 'd-flex': childrenRows }"
+        >
+          <ng-container *ngIf="columnsDefinitions?.length !== headers.length">
+            <td
+              *ngFor="let header of headers; let i = index"
+              [attr.name]="header.name"
+              class="flex-basis-100"
+              [ngClass]="'td-' + i"
+              style="position: relative"
+            >
+              <div
+                (click)="clickRow(header, row, $event)"
+                [style]="header.style"
+                [style.cursor]="header.clickable ? 'pointer' : 'initial'"
+                *ngIf="!header.hideCondition || !header.hideCondition(row)"
+                [ngSwitch]="header.type"
+              >
+                <ng-container *ngSwitchCase="TableHeaderType.DATE">
+                  {{ row[header.name] | date : header.dateFormat || DEFAULT_DATE_FORMAT }}
+                </ng-container>
+                <ng-container
+                  *ngSwitchCase="TableHeaderType.TEMPLATE"
+                  [ngTemplateOutlet]="getTemplateForColumn(header.name)"
+                  [ngTemplateOutletContext]="{
+                    $implicit: row,
+                    header: headers[i],
+                    row: row,
+                    childrenData: childrenData,
+                    index: i
+                  }"
+                >
+                </ng-container>
+                <ng-container *ngSwitchCase="TableHeaderType.HTML">
+                  <div [innerHTML]="row[header.name]"></div>
+                </ng-container>
+                <ng-container *ngSwitchDefault>
+                  {{ row[header.name] }}
+                </ng-container>
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container *ngIf="columnsDefinitions?.length === headers.length">
+            <ng-container *ngFor="let header of columnsDefinitions; let i = index">
+              <td (click)="clickRow(header, row, $event)" class="flex-basis-100" [ngClass]="'td-' + i">
+                <ng-container
+                  [ngTemplateOutlet]="header?.template"
+                  [ngTemplateOutletContext]="{
+                    $implicit: row,
+                    header: headers[i],
+                    row: row,
+                    childrenData: childrenData,
+                    index: i
+                  }"
+                >
+                </ng-container>
+              </td>
+            </ng-container>
+          </ng-container>
+        </div>
+      </ng-container>
+      <ng-template #noChildrenRows>
+        <ng-container *ngIf="columnsDefinitions?.length !== headers.length">
+          <td *ngFor="let header of headers; let i = index" [attr.name]="header.name" style="position: relative">
+            <div
+              (click)="clickRow(header, row, $event)"
+              [style]="header.style"
+              [style.cursor]="header.clickable ? 'pointer' : 'initial'"
+              *ngIf="!header.hideCondition || !header.hideCondition(row)"
+              [ngSwitch]="header.type"
+            >
+              <ng-container *ngSwitchCase="TableHeaderType.DATE">
+                {{ row[header.name] | date : header.dateFormat || DEFAULT_DATE_FORMAT }}
+              </ng-container>
+              <ng-container
+                *ngSwitchCase="TableHeaderType.TEMPLATE"
+                [ngTemplateOutlet]="getTemplateForColumn(header.name)"
+                [ngTemplateOutletContext]="{
+                  $implicit: row,
+                  header: headers[i],
+                  row: row,
+                  childrenData: childrenData,
+                  index: i
+                }"
+              >
+              </ng-container>
+              <ng-container *ngSwitchCase="TableHeaderType.HTML">
+                <div [innerHTML]="row[header.name]"></div>
+              </ng-container>
+              <ng-container *ngSwitchDefault>
+                {{ row[header.name] }}
+              </ng-container>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container *ngIf="columnsDefinitions?.length === headers.length">
+          <ng-container *ngFor="let header of columnsDefinitions; let i = index">
+            <td (click)="clickRow(header, row, $event)">
+              <ng-container
+                [ngTemplateOutlet]="header?.template"
+                [ngTemplateOutletContext]="{
+                  $implicit: row,
+                  header: headers[i],
+                  row: row,
+                  index: i
+                }"
+              >
+              </ng-container>
+            </td>
+          </ng-container>
+        </ng-container>
+      </ng-template>
+      <ng-container *ngIf="childrenData && row.id === activeChildRow">
+        <div *ngFor="let innerRow of childrenData" class="child-list-element d-flex">
+          <ng-container *ngIf="columnsDefinitions?.length === headers.length">
+            <ng-container *ngFor="let header of columnsDefinitions; let i = index">
+              <td (click)="clickRow(header, innerRow, $event)" class="flex-basis-100" [ngClass]="'td-' + i">
+                <ng-container
+                  [ngTemplateOutlet]="header?.template"
+                  [ngTemplateOutletContext]="{
+                    $implicit: innerRow,
+                    header: headers[i],
+                    row: innerRow,
+                    index: i
+                  }"
+                >
+                </ng-container>
+              </td>
+            </ng-container>
+          </ng-container>
+        </div>
+      </ng-container>
+    </tr>
+  </table>
+  <mc-paginator
+    *ngIf="options.pagination"
+    class="clearfix"
+    [length]="dataLength"
+    [pageSizeOptions]="options.pageSizeOptions"
+    (page)="onChangePage($event)"
+    [pageSize]="pageSize"
+  ></mc-paginator>
+</div>

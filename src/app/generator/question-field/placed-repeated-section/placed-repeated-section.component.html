@@ -1,0 +1,17 @@
+<div class="gridster-container" [style.height.px]="containerHeight" *ngIf="sectionData && items">
+  <section [ngStyle]="gridStyle">
+    <question-field
+      *ngFor="let item of items; let i = index"
+      [appGridItem]="item"
+      [item]="item"
+      [index]="i"
+      [hideSettings]="true"
+    ></question-field>
+  </section>
+
+  <div class="vertical-center">
+    <button class="btn btn-secondary mt-5 ml-2" type="button">
+      {{ sectionData.repeatingSectionConfig.addBtnName ? sectionData.repeatingSectionConfig.addBtnName : 'Dodaj +' }}
+    </button>
+  </div>
+</div>

@@ -1,0 +1,16 @@
+<div class="d-flex">
+  <select [(ngModel)]="_values[0]" class="mr-2" (ngModelChange)="onModelChange($event, 0)">
+    <option *ngFor="let item of options" [value]="item.value">{{ item.name }}</option>
+  </select>
+  <ng-container *ngIf="optionsLevels?.length">
+    <select
+      *ngFor="let opts of optionsLevels; let i = index"
+      [(ngModel)]="_values[i + 1]"
+      name="select_{{ i }}"
+      class="mr-2"
+      (ngModelChange)="onModelChange($event, i + 1, opts)"
+    >
+      <option *ngFor="let item of opts" [value]="item.value">{{ item.name }}</option>
+    </select>
+  </ng-container>
+</div>

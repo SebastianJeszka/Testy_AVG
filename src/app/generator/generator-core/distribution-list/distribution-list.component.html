@@ -1,0 +1,35 @@
+<h1 mat-dialog-title>Lista dystrybucyjna</h1>
+<form #form="ngForm">
+  <div class="form" #dialogContent mat-dialog-content>
+    <message-label class="mb-2" *ngIf="!emailsList.length"> Nie dodano żadnego adresu e-mail. </message-label>
+
+    <div class="p-1">
+      <div *ngFor="let email of emailsList; let i = index; trackBy: trackByIdx" class="d-flex mb-2">
+        <mc-input-text
+          required
+          class="input-mb-0"
+          placeholder="Wpisz email"
+          name="emailListItem_{{ i }}"
+          [(ngModel)]="emailsList[i]"
+          minlength="3"
+          [style.width]="'100%'"
+          [disabled]="disableState"
+          email
+        >
+        </mc-input-text>
+
+        <button class="trash-button ml-4" (click)="onRemoveEmail(i)" [disabled]="disableState">
+          <img src="assets/icons/trash.svg" />
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div mat-dialog-actions class="justify-space-between mt-2 mb-1">
+    <button class="btn btn-secondary" (click)="onAddEmail()" [disabled]="disableState">Dodaj email</button>
+    <div>
+      <button class="btn btn-secondary mr-3" mat-dialog-close>Anuluj</button>
+      <button class="btn btn-primary ml-3" (click)="onSave()" [disabled]="disableState || !form.valid">Zapisz</button>
+    </div>
+  </div>
+</form>

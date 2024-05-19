@@ -1,0 +1,21 @@
+<div
+  class="context-menu-container"
+  [style.top.px]="openActionEvent?.clientY"
+  [style.left.px]="openActionEvent?.clientX"
+>
+  <ng-container
+    *ngTemplateOutlet="recursiveConfig; context: { items: contextMenuItems, firstLevel: true }"
+  ></ng-container>
+</div>
+
+<ng-template #recursiveConfig let-items="items" let-firstLevel="firstLevel">
+  <ul class="menu-list" [class.menu-list--first-level]="firstLevel">
+    <li *ngFor="let contextMenuItem of items" class="menu-list__item" (click)="clickAction(contextMenuItem.emitValue)">
+      {{ contextMenuItem.label }}
+      <span *ngIf="contextMenuItem.subItems?.length" class="gov-icon gov-icon--arrow-right icon-more ml-3"></span>
+      <ng-container *ngIf="contextMenuItem.subItems?.length">
+        <ng-container *ngTemplateOutlet="recursiveConfig; context: { items: contextMenuItem.subItems }"></ng-container>
+      </ng-container>
+    </li>
+  </ul>
+</ng-template>

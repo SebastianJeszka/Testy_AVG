@@ -1,0 +1,55 @@
+<h1 mat-dialog-title data-testid="processPopupHeader">Zarządzaj procesami</h1>
+
+<section mat-dialog-content>
+  <form class="form" #editDictionaryForm="ngForm">
+    <ng-container *ngIf="data && nodeProcess">
+      <mat-tab-group mat-stretch-tabs="false">
+        <mat-tab label="Proces przed wejściem">
+          <div class="pt-3 pl-2 pr-2 mb-5">
+            <one-process-view
+              [processExecuteTime]="'before'"
+              [process]="beforeProcess"
+              [disableState]="disableState"
+              [node]="node"
+              [formVersionType]="formVersionType"
+              [formVersion]="formVersion"
+            ></one-process-view>
+          </div>
+        </mat-tab>
+
+        <mat-tab label="Proces po wyjściu">
+          <div class="pt-3 pl-2 pr-2 mb-5">
+            <one-process-view
+              [processExecuteTime]="'after'"
+              [process]="afterProcess"
+              [disableState]="disableState"
+              [node]="node"
+              [formVersionType]="formVersionType"
+            ></one-process-view>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </ng-container>
+  </form>
+  <p *ngIf="!data || !nodeProcess">Niema procesów dla tej strony</p>
+</section>
+
+<div mat-dialog-actions class="mb-1 d-flex justify-space-between">
+  <ng-container *ngIf="data && nodeProcess">
+    <button class="btn btn-secondary" type="button" (click)="onCancel()" data-testid="cancelProcessEdition">
+      {{ !disableState ? 'Anuluj' : 'Wróć' }}
+    </button>
+    <button
+      *ngIf="!disableState"
+      class="btn btn-primary ml-4"
+      type="button"
+      (click)="onSaveChanges()"
+      [class.btn-disabled]="
+        (beforeProcess.enabled && !beforeProcess.type) || (afterProcess.enabled && !afterProcess.type) || !isFormValid
+      "
+      data-testid="saveProcessEdition"
+    >
+      Zapisz
+    </button>
+  </ng-container>
+</div>

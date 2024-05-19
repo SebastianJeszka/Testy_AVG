@@ -1,0 +1,86 @@
+@import '../../../../assets/styles/variables';
+
+.dropbox {
+  border: 1px solid $gray3;
+  border-radius: 4px;
+  min-height: 12.5rem;
+  width: 100%;
+  position: relative;
+  text-align: center;
+  padding: 1.25rem 0;
+
+  &__instruction {
+    color: #000;
+    font-size: 1rem;
+    padding: 0.625rem 0;
+    width: 60%;
+    margin: 0 auto;
+  }
+  &__info {
+    font-size: 0.875rem;
+    color: $gray1;
+    width: 60%;
+    margin: 0 auto;
+  }
+
+  &__button {
+    width: 11.5rem;
+    margin: 1.25rem 0;
+  }
+}
+
+.file-info {
+  border-bottom: 2px solid $gray3;
+  padding: 0.625rem 0;
+
+  &__name {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 0.3125rem;
+    font-size: 1rem;
+    color: #000;
+  }
+  &__remove-icon {
+    max-height: 0.875rem;
+    max-width: 0.875rem;
+    cursor: pointer;
+  }
+  &__details {
+    display: flex;
+    justify-content: space-between;
+    color: $gray1;
+    font-size: 0.875rem;
+    flex-wrap: wrap;
+  }
+
+  &__loading {
+    position: relative;
+    height: 11px;
+    background-color: $gray4;
+    width: 100%;
+    margin-bottom: 7px;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  &__loading-inner {
+    left: 0;
+    position: absolute;
+    height: 11px;
+    background-color: $dark-blue;
+  }
+}
+
+.file-info--invalid {
+  border-bottom: 2px solid $light-red;
+
+  .file-info__details {
+    color: $light-red;
+  }
+}
+
+// @media only screen and (max-width: $min-tab) {
+//   .dropbox__instruction, .dropbox__info {
+//     width: 80%;
+//     margin: 0 auto;
+//   }
+// }

@@ -1,0 +1,82 @@
+<h1 mat-dialog-title>Dodaj słownik</h1>
+
+<section>
+  <div mat-dialog-content class="dictionary">
+    <form class="form" #addDictionaryForm="ngForm">
+      <!-- title -->
+      <div class="mb-3">
+        <mc-input-text
+          required
+          minlength="3"
+          name="dictionaryName"
+          data-testid="newDictionaryName"
+          label="Tytuł"
+          [(ngModel)]="dictionary.name"
+        ></mc-input-text>
+      </div>
+
+      <!-- description -->
+      <div>
+        <mc-input-textarea
+          label="Opis"
+          name="description"
+          data-testid="newDictionaryDescription"
+          [(ngModel)]="dictionary.description"
+          required
+        ></mc-input-textarea>
+      </div>
+
+      <div>
+        <mc-input-checkbox
+          [(ngModel)]="externalApiEnabled"
+          name="externalApiEnabled"
+          data-testid="toggleExternalApiCheckbox"
+          (change)="toggleExternalApiCheckbox()"
+          *roleId="'toggleExternalApiCheckbox'"
+        >
+          Utwórz słownik korzystając z zewnętrznego API
+        </mc-input-checkbox>
+      </div>
+    </form>
+
+    <div class="mb-4">
+      <ng-container *ngIf="externalApiEnabled">
+        <h3 data-testid="externalApiConfigHeader">Konfiguracja słownika z zewnętrznym API</h3>
+        <div class="dictionary__items">
+          <dictionary-config-tree
+            [editState]="false"
+            [addNewDictState]="true"
+            [config]="dictionary?.externalConfig"
+            [levelsData]="dictionary?.dictionaryLevelsData"
+            (configTreeChanged)="onConfigTreeChanged($event)"
+            (dictionaryLevelsDataChanged)="onDictionaryLevelsDataChanged($event)"
+          ></dictionary-config-tree>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="!externalApiEnabled">
+        <h3>Elementy słownika</h3>
+        <div class="dictionary__items">
+          <dictionary-tree
+            [editState]="true"
+            [terms]="dictionary?.children"
+            [dictionaryLevelsData]="dictionary?.dictionaryLevelsData"
+            (treeChanged)="onTreeChanged($event)"
+          ></dictionary-tree>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+
+  <div mat-dialog-actions class="mb-1 dictionary__actions">
+    <button class="btn btn-secondary mr-4" (click)="onNoClick()">Anuluj</button>
+    <button
+      class="btn btn-primary"
+      (click)="onAddDictionary()"
+      data-testid="saveNewDictionary"
+      [disabled]="!addDictionaryForm.valid"
+    >
+      Dodaj
+    </button>
+  </div>
+</section>

@@ -1,0 +1,41 @@
+<h1 mat-dialog-title data-testid="headerCopiesPopup">
+  {{ addingCopy ? 'Dodaj kopie strony' : 'Edytuj konfiguracje kopii - ' + this.originalNode.label }}
+</h1>
+
+<section mat-dialog-content>
+  <p class="mt-1 mb-4">
+    <b>Pola które mają być ukryte</b>
+  </p>
+  <form class="form">
+    <ul class="mb-4">
+      <li *ngFor="let item of tabsFieldsList; let i = index">
+        <mc-input-checkbox
+          (ngModelChange)="onChangeHiddenFields($event, item)"
+          name="field_{{ i }}"
+          [(ngModel)]="item.checked"
+          [disabled]="!editionStateEnabled"
+          data-testid="fieldCheckboxInCopy"
+        >
+          {{ item.name }}
+        </mc-input-checkbox>
+      </li>
+    </ul>
+  </form>
+</section>
+
+<div mat-dialog-actions class="mb-1 d-flex justify-space-between">
+  <ng-container *ngIf="data">
+    <button class="btn btn-secondary" type="button" data-testid="copyPopupCancelButton" (click)="onCancel()">
+      {{ editionStateEnabled ? 'Anuluj' : 'Wróć' }}
+    </button>
+    <button
+      *ngIf="editionStateEnabled"
+      class="btn btn-primary ml-4"
+      type="button"
+      data-testid="copyPopupSaveButton"
+      (click)="onSaveChanges()"
+    >
+      Zapisz
+    </button>
+  </ng-container>
+</div>

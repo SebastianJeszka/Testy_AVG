@@ -1,0 +1,148 @@
+@import './variables';
+// stylelint-disable declaration-no-important
+
+//
+// Text
+//
+
+@mixin text-truncate() {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// .text-monospace { font-family: $font-family-monospace !important; }
+
+// Alignment
+
+.text-center {
+  text-align: center;
+}
+.text-justify {
+  text-align: justify !important;
+}
+.text-wrap {
+  white-space: normal !important;
+}
+.text-nowrap {
+  white-space: nowrap !important;
+}
+.text-right {
+  text-align: right;
+}
+.text-left {
+  text-align: left;
+}
+.text-truncate {
+  @include text-truncate();
+}
+
+// Transformation
+
+.text-lowercase {
+  text-transform: lowercase !important;
+}
+.text-uppercase {
+  text-transform: uppercase !important;
+}
+.text-capitalize {
+  text-transform: capitalize !important;
+}
+
+.text-decoration-none {
+  text-decoration: none !important;
+}
+
+.text-break {
+  word-break: break-word !important; // IE & < Edge 18
+  overflow-wrap: break-word !important;
+}
+
+.text-light-grey {
+  color: $gray3;
+}
+
+.text-red {
+  color: $light-red;
+}
+
+// Reset
+.text-reset {
+  color: inherit !important;
+}
+
+.text-editor {
+  ul,
+  ol {
+    padding-left: 1.5em;
+  }
+  ul {
+    list-style: disc;
+    ul {
+      list-style: circle;
+    }
+  }
+  ol {
+    list-style: decimal;
+  }
+
+  h1 {
+    font-size: 2em;
+  }
+  h2 {
+    font-size: 1.5em;
+  }
+  h3 {
+    font-size: 1.17em;
+  }
+  big {
+    font-size: large;
+  }
+  small {
+    font-size: smaller;
+  }
+  tt,
+  code,
+  kbd {
+    font-family: monospace;
+  }
+  var,
+  cite {
+    font-style: italic;
+  }
+  del {
+    text-decoration: line-through;
+  }
+  ins {
+    text-decoration: underline;
+  }
+  blockquote,
+  q {
+    quotes: auto;
+  }
+  q:before {
+    content: open-quote;
+  }
+  q:after {
+    content: close-quote;
+  }
+  blockquote {
+    font-style: italic;
+    font-family: Georgia, Times, 'Times New Roman', serif;
+    padding: 2px 0;
+    border-style: solid;
+    border-color: #ccc;
+    border-width: 0;
+    display: block;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 40px;
+    margin-inline-end: 40px;
+    padding-left: 20px;
+    padding-right: 8px;
+    border-left-width: 5px;
+  }
+  .marker {
+    background-color: Yellow;
+  }
+}

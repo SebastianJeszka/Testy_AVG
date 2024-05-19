@@ -1,0 +1,19 @@
+<form class="form d-flex align-items-center" #form="ngForm">
+  <mc-input-text
+    data-testid="newDictionaryTermInput"
+    label="Nowa pozycja"
+    required
+    name="term"
+    [(ngModel)]="name"
+  ></mc-input-text>
+  <button
+    class="btn btn-primary ml-4 mr-2"
+    (click)="onSave()"
+    [disabled]="!form.valid"
+    title="Zapisz"
+    data-testid="newDictionaryTermSaveButton"
+  >
+    Zapisz
+  </button>
+  <button class="btn btn-secondary" (click)="onCancel()" title="Anuluj">Anuluj</button>
+</form>

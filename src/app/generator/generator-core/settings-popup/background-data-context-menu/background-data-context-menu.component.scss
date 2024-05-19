@@ -1,0 +1,44 @@
+@import '../../../../../assets/styles/variables';
+
+.menu-item {
+  padding: 8px 16px;
+  padding-right: 30px;
+  border-bottom: 1px solid $gray4;
+  cursor: pointer;
+  z-index: 10000;
+  background: white;
+  max-height: 20vh;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  color: $dark-blue;
+  &:hover,
+  &.picked {
+    background: $gray4;
+  }
+  &.highlight {
+    background: $dark-blue;
+    color: $gray5;
+    font-weight: bold;
+  }
+}
+
+li {
+  position: relative;
+  white-space: nowrap;
+}
+.arrow {
+  position: absolute;
+  top: 5px;
+  right: 10px;
+}
+
+.wrap {
+  overflow-y: scroll;
+  max-height: 35vh;
+  border: 1px solid $dark-blue;
+  border-radius: 4px;
+  z-index: 10000;
+}
+
+.second-menu {
+  margin-top: 40px;
+}

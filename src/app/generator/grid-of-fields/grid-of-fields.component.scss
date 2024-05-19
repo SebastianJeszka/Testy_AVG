@@ -1,0 +1,11 @@
+@import '../../../assets/styles/variables';
+
+gridster-item {
+  cursor: grab;
+  &.disabled {
+    cursor: default;
+  }
+  &:hover {
+    background-color: $gridster-hover;
+  }
+}

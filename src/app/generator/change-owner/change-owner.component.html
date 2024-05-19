@@ -1,0 +1,34 @@
+<h1 mat-dialog-title data-testid="changeOwnerHeader">Zmień właściciela dla formularza <strong>{{ form.name }}</strong></h1>
+
+<section>
+  <div mat-dialog-content class="change-owner-form">
+    <form class="form" #ownerForm="ngForm">
+      <div class="mb-3">
+        <mc-input-radio
+          *ngFor="let formOwner of appUsers$ | async; let i = index"
+          [(ngModel)]="newOwner"
+          name="newOwnerId"
+          [value]="formOwner.id"
+        >
+          {{ formOwner.firstName + ' ' + formOwner.lastName }}
+        </mc-input-radio>
+      </div>
+    </form>
+  </div>
+
+  <div mat-dialog-actions class="mb-1 change-owner-form__actions">
+    <button class="btn btn-secondary mr-4" (click)="onNoClick()">Anuluj</button>
+    <button
+      class="btn btn-primary"
+      [class.btn-disabled]="!ownerForm.valid"
+      [disabled]="!ownerForm.valid"
+      type="button"
+      quickConfirm
+      popoverMessage="Czy na pewno chcesz zmienić właściela formularza?"
+      (confirm)="changeOwner()"
+      [disabled]="!newOwner"
+    >
+      Zmień właściciela
+    </button>
+  </div>
+</section>

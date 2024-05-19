@@ -1,0 +1,22 @@
+@import '../../../../assets/styles/variables';
+@import '../../../../assets/styles/helpers';
+
+.autocomplete-process-response__row {
+  mc-input-select {
+    display: block;
+    margin-bottom: -1.5rem;
+  }
+
+  .gov-icon--trend-rising {
+    display: block;
+    color: $dark-blue;
+    transform: rotateZ(90deg);
+  }
+}
+
+@media (max-width: $min-tab) {
+  .trash-button {
+    margin-left: auto !important;
+    margin-top: 10px;
+  }
+}

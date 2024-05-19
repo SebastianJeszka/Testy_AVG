@@ -1,0 +1,170 @@
+<context-menu #basicMenu>
+  <ng-template contextMenuItem (execute)="goToTab($event.value)"> Przejdz do strony </ng-template>
+  <ng-template contextMenuItem (execute)="onOpenProcessPopup($event.value)"> Zarządzaj procesami strony </ng-template>
+  <ng-template contextMenuItem [visible]="showHandleCopiesOption" (execute)="onOpenCopiesOfTabPopup($event.value)">
+    Zarządzaj kopiami strony
+  </ng-template>
+  <ng-template contextMenuItem [visible]="showEditCopyOption" (execute)="onOpenCopiesOfTabPopup($event.value)">
+    Edytuj konfiguracje kopii
+  </ng-template>
+
+  <ng-template contextMenuItem let-item [visible]="showRemoveOption" (execute)="onRemoveNode($event.value)">
+    Usuń
+  </ng-template>
+</context-menu>
+
+<!-- error  -->
+<a
+  [routerLink]="'/generator/view/' + formVersion?.formId"
+  [queryParams]="{ currentTabId: currentTabId }"
+  class="gov-icon gov-icon--arrow-left font-weight-bold mb-3"
+  data-testid="backToGeneratorLink"
+>
+  <b> Powrót</b>
+</a>
+
+<header class="mt-4 mb-5">
+  <h1 class="gov-h1" data-testid="tabsFlowHeader">Zarządzaj przepływem stron</h1>
+</header>
+
+<p class="mt-4 mb-3"><b>Dodaj krok</b></p>
+
+<ng-container *ngIf="formVersion">
+  <section class="mt-4">
+    <ng-container *ngIf="formVersion.tabs?.length && formVersion.flow">
+      <!-- add link form -->
+      <add-link-form
+        *ngIf="formVersion.state === formVersionState.SKETCH"
+        (newLink)="onAddNewLink($event)"
+        (currentQueryConfig)="onNewQueryConfig($event)"
+        [formVersion]="formVersion"
+        [startNodeOptions]="startNodeOptions"
+        [finishNodeOptions]="finishNodeOptions"
+      ></add-link-form>
+
+      <!-- #region graph-container -->
+      <div class="graph-container mt-4" style="height: 600px; border: 1px solid #ccc">
+        <ngx-graph class="chart-container" [links]="links" [nodes]="nodes" [update$]="update$" [autoCenter]="true">
+          <ng-template #nodeTemplate let-node>
+            <svg:g
+              class="node"
+              (dblclick)="goToTab(node)"
+              [contextMenu]="basicMenu"
+              [contextMenuValue]="node"
+              data-testid="grafNode"
+              attr.data-testName="{{ node.label }}"
+            >
+              <svg:foreignObject
+                [attr.width]="getNodeWIdth(node)"
+                [attr.height]="node.dimension.height"
+                [matTooltip]="graphTooltipController.setNodeTooltipContent(node)"
+              >
+                <xhtml:div class="node-div">
+                  <div class="process process-left enabled" *ngIf="ifBeforeProcesses(node)">
+                    <mat-icon>settings</mat-icon>
+                  </div>
+                  <label>{{ node.label }}</label>
+                  <div class="process process-right enabled" *ngIf="ifAfterProcesses(node)">
+                    <mat-icon>settings</mat-icon>
+                  </div>
+                </xhtml:div>
+              </svg:foreignObject>
+            </svg:g>
+          </ng-template>
+
+          <ng-template #defsTemplate>
+            <svg:marker
+              id="arrow"
+              viewBox="0 -5 10 10"
+              refX="8"
+              refY="0"
+              markerWidth="3"
+              markerHeight="3"
+              orient="auto"
+            >
+              <svg:path d="M0,-5L10,0L0,5" class="arrow-head" />
+            </svg:marker>
+          </ng-template>
+
+          <ng-template #linkTemplate let-link>
+            <svg:g
+              class="edge"
+              (click)="onClickInLink(link)"
+              matTooltip="{{ graphTooltipController.setLinkTooltipContent(link) }}"
+              data-testid="grafLink"
+            >
+              <svg:path
+                class="line"
+                stroke-width="4"
+                marker-end="url(#arrow)"
+                [attr.stroke]="link.data?.isDefaultStep ? defaultStepColor : '#666'"
+              ></svg:path>
+              <svg:text class="edge-label" text-anchor="middle">
+                <textPath
+                  class="text-path"
+                  [attr.href]="'#' + link.id"
+                  [style.dominant-baseline]="link.dominantBaseline"
+                  startOffset="50%"
+                >
+                  {{ link.data?.query?.queryName | slice : 0 : 15 }}
+                </textPath>
+              </svg:text>
+            </svg:g>
+          </ng-template>
+        </ngx-graph>
+      </div>
+      <!-- #endregion graph-container -->
+
+      <p *ngIf="graphValidationMessage" data-testid="graphValidationMessage" class="text-red text-right mt-3 mb-0">
+        {{ graphValidationMessage }}
+      </p>
+
+      <div class="g-row justify-space-between d-flex mb-6">
+        <div class="g-col-tab-3 g-col-12 legend mt-3">
+          <h2 class="mb-0">Legenda:</h2>
+          <div class="legend__piece">
+            <div [style.backgroundColor]="defaultStepColor" class="mr-1"></div>
+            <span>- Ścieżka domyślna</span>
+          </div>
+          <div class="legend__piece">
+            <div [style.backgroundColor]="'#666'" class="mr-1"></div>
+            <span>- Ścieżka alternatywna</span>
+          </div>
+        </div>
+
+        <div class="g-col-tab-9 g-col-12 text-right mt-4">
+          <span
+            [class.isDisabled]="!linksAdded"
+            [matTooltip]="graphValidationMessage"
+            [matTooltipDisabled]="linksAdded"
+          >
+            <a href="{{ previewUrl }}" class="btn btn-secondary" target="_blank">Podgląd</a>
+          </span>
+
+          <button
+            *ngIf="formVersion.state === formVersionState.SKETCH"
+            type="button"
+            class="btn btn-secondary mr-4 ml-4"
+            quickConfirm
+            popoverMessage="Czy na pewno chcesz ustawić domyślne ustawienia?"
+            (confirm)="onSetDefault()"
+            [disabled]="!isUserForm"
+          >
+            Domyślne ustawienia
+          </button>
+
+          <button
+            *ngIf="formVersion.state === formVersionState.SKETCH"
+            type="button"
+            class="btn"
+            (click)="onSaveFlow()"
+            [disabled]="!isUserForm"
+            data-testid="saveFLowButton"
+          >
+            Zapisz zmiany {{ isEdited ? '*' : '' }}
+          </button>
+        </div>
+      </div>
+    </ng-container>
+  </section>
+</ng-container>

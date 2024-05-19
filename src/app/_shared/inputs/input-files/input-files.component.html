@@ -1,0 +1,28 @@
+<mc-file-uploader
+  (fileUploaded)="addFile($event)"
+  (inputTouched)="model.control.markAsTouched()"
+  [fileLimit]="fileLimit"
+  [options]="options"
+  [disabled]="disabled"
+>
+  <div class="invalid-feedback" *ngIf="invalid | async">
+    {{ failures | async }}
+  </div>
+</mc-file-uploader>
+<input type="text" [id]="name" [name]="name" [(ngModel)]="value" />
+<div *ngFor="let file of value" class="file-info">
+  <div class="file-info__name">
+    <div>{{ file.name }}</div>
+    <div class="d-flex">
+      <button *ngIf="showCopyLinkBtn" class="btn btn-tertiary ml-2 mr-3" (click)="onClickCopyLink(file)">
+        skopiuj link
+      </button>
+      <div tabIndex="0" class="mt-2">
+        <span class="gov-icon gov-icon--close" (click)="removeFile(file)" alt="Usuń plik"></span>
+      </div>
+    </div>
+  </div>
+  <div class="file-info__details">
+    <div>{{ file.size | fileSize }}</div>
+  </div>
+</div>

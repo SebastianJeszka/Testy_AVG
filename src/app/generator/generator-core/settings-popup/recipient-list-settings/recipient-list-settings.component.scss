@@ -1,0 +1,11 @@
+@import '../../../../../assets/styles/variables';
+
+.gov-icon--trend-rising {
+  display: block;
+  color: $dark-blue;
+  transform: rotateZ(90deg);
+}
+
+.flex-basis-100 {
+  flex-basis: 100%;
+}

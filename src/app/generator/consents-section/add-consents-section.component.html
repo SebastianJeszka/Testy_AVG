@@ -1,0 +1,101 @@
+<ng-container *ngIf="field">
+  <ng-container *ngIf="isTemplateForm">
+    <mc-input-checkbox [(ngModel)]="field.isCustomized" name="isCustomized"> Pole do profilowania </mc-input-checkbox>
+    <mc-input-text
+      name="consentTechName"
+      label="Nazwa techniczna pola"
+      minlength="3"
+      class="input-mb-1 mt-3"
+      [style.width]="'100%'"
+      [required]="true"
+      [uniqueTechName]="field.id"
+      [(ngModel)]="field.techName"
+      [errorMessages]="{
+        techName: 'Taka nazwa techniczna już istnieje. Podaj unikalną nazwę techniczną'
+      }"
+      (change)="onChangeTechName()"
+    ></mc-input-text>
+  </ng-container>
+  <ng-container *ngIf="!field.isCustomized">
+    <div class="form">
+      <ng-container *ngIf="!isTemplateForm">
+        <mc-input-text
+          name="consentTechName"
+          label="Nazwa techniczna pola"
+          minlength="3"
+          class="input-mb-1 mt-3"
+          [style.width]="'100%'"
+          [required]="true"
+          [uniqueTechName]="field.id"
+          [(ngModel)]="field.techName"
+          [errorMessages]="{
+            techName: 'Taka nazwa techniczna już istnieje. Podaj unikalną nazwę techniczną'
+          }"
+          (change)="onChangeTechName()"
+        ></mc-input-text>
+      </ng-container>
+      <mc-input-checkbox
+        class="ml-3 input-mb-1"
+        name="checkAllEnabled"
+        [(ngModel)]="consentSectionConfig.selectAllEnabled"
+      >
+        Pokazać przycisk "Zaznacz wszystkie"
+      </mc-input-checkbox>
+    </div>
+
+    <h2 class="mt-4 mb-3">Lista zgód</h2>
+
+    <ul>
+      <li *ngFor="let consent of consentSectionConfig.consents; let i = index" class="mb-2">
+        <div class="form d-flex justify-space-between">
+          <p class="mr-1">{{ i + 1 }}.</p>
+
+          <p
+            [innerHTML]="consent.description || 'Tekst zgody' | safeHtml"
+            [style.width]="'65%'"
+            class="consent-text text-editor"
+          ></p>
+
+          <mc-input-checkbox
+            class="ml-3 mt-1 input-mb-1"
+            name="required_{{ i }}"
+            [(ngModel)]="consent.required"
+            (change)="changeConf.emit(consentSectionConfig)"
+          >
+            Wymagana
+          </mc-input-checkbox>
+
+          <div>
+            <button class="btn btn-tertiary pointer p-0 ml-2" (click)="onEdit(consent)" data-testid="editConsentButton">
+              edytuj tekst
+            </button>
+            <button class="btn btn-tertiary p-0 ml-3" (click)="onRemove(i)" data-testid="removeConsentButton">
+              <mat-icon>delete_forever</mat-icon>
+            </button>
+          </div>
+        </div>
+      </li>
+      <li *ngIf="consentSectionConfig.consents?.length === 0">Jeszcze nie dodano żadnej zgody</li>
+    </ul>
+
+    <button data-testid="addConsentButton" (click)="onAddConsent()" class="mb-3 mt-3 btn">Dodaj zgodę</button>
+
+    <h2 class="mt-4 mb-3">Wgraj plik i skopiuj link do opisu zgody</h2>
+    <div class="mb-3">
+      <mc-input-files
+        [showCopyLinkBtn]="true"
+        name="uploadFiles"
+        [(ngModel)]="consentSectionConfig.files"
+        [options]="{
+          acceptedFormats: ['pdf', 'doc', 'docx'],
+          multiple: true,
+          label: '',
+          maxSize: 5 * 1024 * 1024,
+          fileLimit: 5,
+          uploadMethod: uploadFile.bind(this)
+        }"
+      >
+      </mc-input-files>
+    </div>
+  </ng-container>
+</ng-container>

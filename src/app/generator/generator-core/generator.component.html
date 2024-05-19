@@ -1,0 +1,489 @@
+<ng-container *ngIf="formVersion">
+  <form
+    #generatorForm="ngForm"
+    class="form web-quest mb-6"
+    (ngSubmit)="saveForm()"
+    [style.background]="background"
+    data-testid="generatorForm"
+  >
+    <div>
+      <a [routerLink]="'/'" class="gov-icon gov-icon--arrow-left font-weight-bold mb-3" data-testid="backToIndex">
+        <b>Powrót</b>
+      </a>
+
+      <form-history
+        *ngIf="isEditState"
+        (selectedVersionChanged)="selectFormVersion($event)"
+        (latestFormVersionReloaded)="reloadLatestFormVersion()"
+      >
+      </form-history>
+
+      <header class="mt-4 mb-5">
+        <h1 class="gov-h1" *ngIf="!isLoading" data-testid="generatorHeader">
+          {{ !isEditState ? 'Nowy formularz' : 'Edycja formularza' }}
+        </h1>
+
+        <div class="d-flex align-items-center">
+          <ng-container
+            *ngIf="
+              isEditState &&
+              formVersion.state === formVersionState.SKETCH &&
+              formVersion.type !== formVersionTypes.SERVICE &&
+              isUserForm
+            "
+          >
+            <button
+              class="btn btn-secondary mr-3"
+              type="button"
+              quickConfirm
+              popoverMessage="Czy na pewno chcesz zmienić stan formularza?"
+              (confirm)="onChangeStatusToPending()"
+              data-testid="changeStatusToPendingButton"
+              *roleId="'changeStatusToPendingButton'"
+            >
+              Gotowy do publikacji
+            </button>
+          </ng-container>
+
+          <ng-container
+            *ngIf="
+              isEditState &&
+              !formVersion.sketchCreated &&
+              formVersion.state === formVersionState.PENDING &&
+              formVersion.type !== formVersionTypes.SERVICE &&
+              isUserForm
+            "
+          >
+            <button
+              class="btn btn-secondary mr-3"
+              type="button"
+              quickConfirm
+              popoverMessage="Czy na pewno chcesz utworzyć nową wersję?"
+              (confirm)="onCreateNewFormVersion()"
+              data-testid="newSketchButton"
+              *roleId="'newSketchButton'"
+            >
+              Nowy szkic
+            </button>
+          </ng-container>
+
+          <button
+            *ngIf="!isLoading && isEditState"
+            type="button"
+            title="Ustawienia"
+            aria-label="ustawienia"
+            class="pointer btn-clear ml-3"
+            [matMenuTriggerFor]="settings"
+            [disabled]="!isUserForm"
+            data-testid="formSettingsButton"
+          >
+            <mat-icon>settings</mat-icon>
+          </button>
+        </div>
+      </header>
+
+      <!-- settings menu -->
+      <mat-menu #settings>
+        <button mat-menu-item (click)="onClickSettings()" data-testid="settingsMenuItem">Ustawienia</button>
+        <button
+          mat-menu-item
+          (click)="onClickFetchResults()"
+          data-testid="fetchResultsMenuItem"
+          *roleId="'fetchResultsMenuItemButton'"
+        >
+          Pobierz wyniki
+        </button>
+        <div *ngIf="isEditState">
+          <button
+            mat-menu-item
+            *roleId="'fetchStatsMenuItemButton'"
+            class="not-link"
+            [routerLink]="'/generator/statistic/' + this.formVersion.formId"
+            [queryParams]="{
+              currentTabId: currentTabIdParam,
+              formVersionId: this.formVersion.id
+            }"
+          >
+            Pobierz statystykę
+          </button>
+        </div>
+        <span [matTooltip]="graphValidationMessage" [matTooltipDisabled]="linksAdded">
+          <button
+            mat-menu-item
+            [disabled]="!linksAdded"
+            data-testid="previewMenuItem"
+            class="not-link"
+            (click)="openPreview()"
+          >
+            Podgląd
+          </button>
+        </span>
+        <ng-container *ngIf="isEditState">
+          <button mat-menu-item *roleId="'editSummarySectionButton'">
+            <a
+              class="not-link"
+              [routerLink]="'/generator/summary/' + this.formVersion.formId"
+              [queryParams]="{
+                currentTabId: currentTabIdParam,
+                formVersionId: this.formVersion.id
+              }"
+            >
+              Edytuj sekcję podsumowania
+            </a>
+          </button>
+        </ng-container>
+
+        <ng-container *ngIf="isEditState && formVersion.state === formVersionState.SKETCH">
+          <button
+            mat-menu-item
+            class="text-red"
+            quickConfirm
+            popoverMessage="Czy na pewno chcesz usunąć dane z wypełnień formularza?"
+            (confirm)="onClickDeleteRelatedData()"
+            *roleId="'deleteRelatedDataButton'"
+          >
+            Usuń dane wypełnień
+          </button>
+        </ng-container>
+      </mat-menu>
+
+      <section mcAlert="#alert-container" mcAlertClose>
+        <div id="alert-container"></div>
+      </section>
+
+      <section *loading="isLoading">
+        <ng-container *ngIf="formVersion">
+          <!-- title -->
+          <div class="mb-3">
+            <mc-input-text
+              required
+              minlength="3"
+              name="formTitle"
+              label="Tytuł formularza"
+              [(ngModel)]="formVersion.title"
+              (ngModelChange)="onChangeTitle()"
+              [disabled]="formVersion.state !== formVersionState.SKETCH"
+              noSpaces
+              [errorMessages]="{
+                whitespace: 'Wartość nie może być spacją'
+              }"
+            ></mc-input-text>
+          </div>
+
+          <!-- technical name -->
+          <div class="mb-3">
+            <mc-input-text
+              required
+              minlength="3"
+              name="formTechName"
+              label="Nazwa techniczna formularza"
+              [(ngModel)]="formVersion.name"
+              (ngModelChange)="onInputChanged()"
+              [disabled]="formVersion.state !== formVersionState.SKETCH"
+              noSpaces
+              [errorMessages]="{
+                whitespace: 'Wartość nie może być spacją'
+              }"
+            ></mc-input-text>
+          </div>
+
+          <div class="mb-4">
+            <mc-input-textarea
+              label="Opis"
+              name="description"
+              [(ngModel)]="formVersion.description"
+              (ngModelChange)="onInputChanged()"
+              [disabled]="formVersion.state !== formVersionState.SKETCH"
+            ></mc-input-textarea>
+          </div>
+
+          <div class="mb-4">
+            <mc-input-checkbox
+              class="ml-3 input-mb-1"
+              name="enableNavigation"
+              [disabled]="formVersion.state !== formVersionState.SKETCH"
+              [(ngModel)]="formVersion.enableNavigation"
+              (change)="onInputChanged()"
+              data-testid="enableNavigation"
+            >
+              Uwzględnij nawigację
+            </mc-input-checkbox>
+          </div>
+
+          <div class="mb-4" *ngIf="formVersion.enableNavigation">
+            <h2 class="gov-h2 mb-4">Nawigacja</h2>
+            <navigation-steps [formVersion]="formVersion" (change)="onInputChanged()"></navigation-steps>
+          </div>
+
+          <p class="mb-3" data-testid="chooseFormTypeParagraph">Wybierz typ formularza</p>
+          <div
+            class="d-flex"
+            [class.mb-4]="formVersion.type !== formVersionTypes.REGISTRATION"
+            [class.mb-2]="formVersion.type === formVersionTypes.REGISTRATION"
+          >
+            <ng-container *ngFor="let formVersionTypeLabel of formVersionTypeLabels | keyvalue : originalOrder">
+              <mc-input-radio
+                *roleId="'chooseFormType'"
+                class="mr-5"
+                name="formType"
+                [attr.aria-label]="formVersionTypeLabel.value"
+                [(ngModel)]="formVersion.type"
+                [value]="formVersionTypeLabel.key"
+                (change)="onFormVersionTypeChange()"
+                [disabled]="
+                  formVersion.type === formVersionTypes.SERVICE ||
+                  formVersion.state !== formVersionState.SKETCH ||
+                  (formVersionTypeLabel.key === formVersionTypes.FORM && (formTypeFormDisabled$ | async)) ||
+                  (formVersionTypeLabel.key === formVersionTypes.QUIZ && (formTypeQuizDisabled$ | async)) ||
+                  (formVersionTypeLabel.key === formVersionTypes.REGISTRATION &&
+                    (formTypeRegistrationDisabled$ | async)) ||
+                  (formVersionTypeLabel.key === formVersionTypes.TEMPLATE && (formTypeTemplateDisabled$ | async)) ||
+                  (formVersionTypeLabel.key === formVersionTypes.SERVICE && (formTypeServiceDisabled$ | async))
+                "
+              >
+                {{ formVersionTypeLabel.value }}
+              </mc-input-radio>
+            </ng-container>
+          </div>
+
+          <div class="selected-service" *ngIf="formVersion.type === formVersionTypes.SERVICE">
+            <mc-input-select
+              class="mb-4"
+              [options]="filterServiceConfigs"
+              name="selectedServiceConfig"
+              [(ngModel)]="selectedServiceConfig"
+              (ngModelChange)="onServiceConfigChange($event)"
+              required
+              optionDisplay="name"
+              label="Wskaż konfigurację usługi"
+              [disabled]="selectedServiceConfig && (formConfigChangeDisabled$ | async)"
+            >
+            </mc-input-select>
+
+            <mc-input-select
+              *ngIf="!!selectedServiceConfig"
+              class="mb-4"
+              [options]="filterServiceConfigVersions"
+              name="selectedServiceConfigVersion"
+              [(ngModel)]="selectedServiceConfigVersion"
+              (ngModelChange)="onServiceConfigVersionChange($event)"
+              required
+              optionDisplay="status"
+              label="Wskaż wersję konfiguracji usługi"
+              [disabled]="selectedServiceConfigVersion && (formConfigChangeDisabled$ | async)"
+            >
+            </mc-input-select>
+
+            <div class="mt-4 mb-4" *ngIf="!!selectedServiceConfigVersion">
+              <div *ngFor="let step of serviceConfigSteps">
+                <mc-input-radio
+                  class="mr-5 mb-1"
+                  name="serviceConfigStep"
+                  [attr.aria-label]="step.name"
+                  [(ngModel)]="formVersion.serviceStageId"
+                  [value]="step.id"
+                >
+                  {{ step.label ?? 'Brak nazwy' }}
+                </mc-input-radio>
+              </div>
+            </div>
+            <div class="mb-4" *ngIf="formVersion.serviceId && !serviceConfigSteps.length">Brak etapów</div>
+          </div>
+
+          <ng-container *ngIf="formVersion.type === formVersionTypes.REGISTRATION">
+            <p class="mb-3">Wybierz sposób weryfikacji tożsamości</p>
+            <div class="d-flex mb-4">
+              <ng-container
+                *ngFor="
+                  let registerConfirmationTypeLabel of registrationConfirmationTypeLabels | keyvalue : originalOrder
+                "
+              >
+                <mc-input-radio
+                  class="mr-5"
+                  name="registerConfirmationType"
+                  [attr.aria-label]="registerConfirmationTypeLabel.value"
+                  [(ngModel)]="formVersion.registrationConfirmationType"
+                  [value]="registerConfirmationTypeLabel.key"
+                  (change)="onQuestTypeChanged()"
+                  [disabled]="formVersion.state !== formVersionState.SKETCH"
+                >
+                  {{ registerConfirmationTypeLabel.value }}
+                </mc-input-radio>
+              </ng-container>
+            </div>
+          </ng-container>
+
+          <h2 class="gov-h2">Strony formularza</h2>
+
+          <!-- TODO it on cols grid -->
+          <div class="g-row mt-4 mb-5">
+            <div class="d-flex align-items-center g-col-12 g-col-tab-6">
+              <mc-input-text
+                class="input-mb-0 mr-4"
+                [(ngModel)]="newTabName"
+                [ngModelOptions]="{ standalone: true }"
+                placeholder="Wpisz nazwę strony..."
+                data-testid="newTabName"
+                [disabled]="formVersion.state !== formVersionState.SKETCH"
+              ></mc-input-text>
+              <button
+                class="btn btn-secondary"
+                type="button"
+                (click)="tabsController.onAddTab(newTabName)"
+                [disabled]="formVersion.state !== formVersionState.SKETCH"
+                data-testid="addNewTab"
+                *roleId="'addNewTabButton'"
+              >
+                Dodaj stronę
+              </button>
+            </div>
+            <div class="g-col-12 g-col-tab-6 generator__flow-button">
+              <a
+                *ngIf="isEditState"
+                class="btn-link btn-clear"
+                [routerLink]="'/generator/flow/' + this.formVersion.formId"
+                [queryParams]="{
+                  currentTabId: currentTabIdParam,
+                  formVersionId: this.formVersion.id
+                }"
+                data-testid="tabsFlowComponentLink"
+              >
+                Zarządzaj przepływem stron
+              </a>
+            </div>
+          </div>
+
+          <mat-tab-group
+            mat-stretch-tabs="false"
+            [dynamicHeight]="true"
+            [selectedIndex]="activeTabIndex"
+            (selectedIndexChange)="onTabIndexChanged($event)"
+            animationDuration="0ms"
+          >
+            <mat-tab *ngFor="let tab of formVersion?.tabs; let index = index">
+              <ng-template mat-tab-label>
+                {{ tab.title }}
+                <ng-container *ngIf="formVersion.state === formVersionState.SKETCH">
+                  <button
+                    stopPropagation
+                    type="button"
+                    aria-label="Opcje strony"
+                    title="Opcje strony"
+                    class="d-flex pointer btn-clear ml-3"
+                    [matMenuTriggerFor]="tabOptions"
+                    (click)="tabsController.onTabSettingsOpened(tab)"
+                    *roleId="'settingsTabButton'"
+                  >
+                    <mat-icon>settings</mat-icon>
+                  </button>
+                </ng-container>
+              </ng-template>
+              <ng-template matTabContent>
+                <div class="g-row mt-4">
+                  <div class="g-col-12 g-col-tab-6">
+                    <mc-input-text
+                      [(ngModel)]="tab.title"
+                      (ngModelChange)="onTabNameChange($event, tab)"
+                      name="title"
+                      label="Nazwa strony"
+                      [disabled]="formVersion.state !== formVersionState.SKETCH"
+                      required
+                      minlength="2"
+                    ></mc-input-text>
+                  </div>
+                  <div
+                    class="g-col-12 g-col-tab-6 d-flex align-items-center"
+                    *ngIf="formVersion.state === formVersionState.SKETCH"
+                  >
+                    <button
+                      class="btn btn-secondary pl-3 pr-3 ml-auto"
+                      type="button"
+                      quickConfirm
+                      popoverMessage="Czy na pewno chcesz usunąć tą stronę?"
+                      (confirm)="tabsController.onTabSettingsOpened(tab); tabsController.onRemoveTab()"
+                      data-testid="removeTab"
+                      *roleId="'removeTabButton'"
+                    >
+                      <svg width="24" height="24" viewBox="0 0 24 24" class="mr-2">
+                        <path
+                          fill="currentColor"
+                          d="M3 6l3 18h12l3-18h-18zm19-4v2h-20v-2h5.711c.9 0 1.631-1.099 1.631-2h5.316c0 .901.73 2 1.631 2h5.711z"
+                        />
+                      </svg>
+                      Usuń stronę
+                    </button>
+                  </div>
+                </div>
+
+                <ng-container *ngIf="tab.questions && tab.questions.length > 0">
+                  <grid-of-fields
+                    [data]="tab.questions"
+                    [type]="formVersion.type"
+                    [tabs]="tabsNames"
+                    [state]="formVersion.state"
+                    [currentTab]="index"
+                    (removeField)="removeField($event, index)"
+                    (moveField)="onMoveItem($event)"
+                    (updateChanges)="onGridUpdateChanges()"
+                  ></grid-of-fields>
+                </ng-container>
+              </ng-template>
+            </mat-tab>
+          </mat-tab-group>
+
+          <ng-container *ngIf="formVersion.state === formVersionState.SKETCH">
+            <div class="d-flex mt-5">
+              <icon-button class="mr-4" (buttonClick)="addNewField()" data-testid="addField" *roleId="'addFieldButton'"
+                >Dodaj pole</icon-button
+              >
+              <icon-button
+                class="mr-4"
+                iconStyle="outline"
+                (buttonClick)="onAddRepeatingSection()"
+                data-testid="addRepeatingSection"
+                *roleId="'addRepeatingSectionButton'"
+                >Dodaj powtarzającą się sekcję</icon-button
+              >
+              <icon-button
+                class="mr-4"
+                [disabled]="formVersion.type !== formVersionTypes.SERVICE"
+                (buttonClick)="addNewConfigField()"
+                data-testid="addField"
+                *roleId="'addFieldButton'"
+                >Dodaj pole z konfiguracji</icon-button
+              >
+            </div>
+          </ng-container>
+        </ng-container>
+      </section>
+      <div class="form-buttons mt-5">
+        <button
+          class="btn save-button"
+          type="submit"
+          data-testid="saveFormButton"
+          *roleId="'saveFormButton'"
+          [disabled]="!generatorForm.valid || !isUserForm"
+          (scroll)="onscroll()"
+          [ngClass]="saveButtonFixed ? 'fixed' : 'nofixed'"
+        >
+          Zapisz
+          {{ isEdited ? '*' : '' }}
+        </button>
+      </div>
+      <p *ngIf="graphValidationMessage" data-testid="graphValidationMessage" class="text-red text-right mt-3 mb-0">
+        {{ graphValidationMessage }}
+      </p>
+    </div>
+  </form>
+</ng-container>
+<mat-menu #tabOptions>
+  <button mat-menu-item data-testid="editTabButton" (click)="tabsController.editTab()">Edytuj</button>
+  <button
+    mat-menu-item
+    quickConfirm
+    popoverMessage="Czy na pewno chcesz usunąć tą stronę?"
+    (confirm)="tabsController.onRemoveTab()"
+  >
+    Usuń
+  </button>
+</mat-menu>

@@ -1,0 +1,101 @@
+<h6 class="mb-2 mt-4" data-testid="externalDataHeader">Konfiguracja danych zewnętrznych</h6>
+
+<h6 class="mb-2 mt-4" data-testid="externalDataHeader">Request URL</h6>
+<input
+  type="text"
+  class="request-url mt-2 mb-2"
+  name="request-url"
+  [(ngModel)]="process.externalDataConfiguration.url"
+  placeholder="url"
+  (keyup)="updateUrlParams(true)"
+  aria-label="url"
+/>
+
+<message-label class="mb-2" *ngIf="!externalConfigDataMap; else externalDataTemplate">
+  Wpisz url z parametrami w nawiasach klamrowych
+</message-label>
+
+<ng-template #externalDataTemplate>
+  <ng-container *ngIf="urlParams">
+    <div *ngFor="let item of externalConfigDataMap.urlParams; let i = index" class="mb-4 mt-1 row-border">
+      <h6 class="mb-2 mt-1" data-testid="externalDataHeader">Parametr URL</h6>
+
+      <div class="select-lists-rows d-flex mt-1">
+        <div class="mr-3 flex-basis-100 margins-input-on-mob" *ngIf="tabs && fields">
+          <mc-input-select
+            required
+            name="pageId_{{ i }}"
+            [options]="tabs"
+            placeholder="Wybierz stronę"
+            optionDisplay="name"
+            optionValue="id"
+            [(ngModel)]="item.tabId"
+            (change)="onChangePage(item)"
+          >
+          </mc-input-select>
+        </div>
+
+        <div class="flex-basis-100 margins-input-on-mob">
+          <div *ngFor="let paramItem of externalConfigDataMap.urlParams[i].source" class="mb-4 row-border">
+            <mc-input-select
+              required
+              name="fieldId_{{ i }}"
+              [options]="fields[item.tabId] ? fields[item.tabId] : []"
+              placeholder="Wybierz pole"
+              optionDisplay="name"
+              optionValue="name"
+              [(ngModel)]="process.externalDataConfiguration.urlParams[i].source[0]"
+              [alreadySelectedValue]="ifFieldIsSelected.bind(this)"
+              [index]="i"
+              [errorMessages]="{
+                alreadySelected: 'Ta wartość już wybrana'
+              }"
+              [disabled]="!item.tabId"
+            >
+            </mc-input-select>
+          </div>
+        </div>
+
+        <div class="mr-3 ml-3 mt-2 hide-on-mobile">
+          <span class="gov-icon gov-icon--trend-rising"></span>
+        </div>
+
+        <div class="flex-basis-100 margins-input-on-mob">
+          <mc-input-text
+            required
+            name="externalMapField_{{ i }}"
+            placeholder="Zewnętrzne mapowanie"
+            [(ngModel)]="process.externalDataConfiguration.urlParams[i].target"
+            [disabled]="true"
+          ></mc-input-text>
+        </div>
+      </div>
+      <h6 class="mb-2 mt-1" data-testid="externalDataHeader">Testuj wartość</h6>
+
+      <div class="wrap d-flex">
+        <input
+          type="text"
+          class="test-req-val mt-2 mb-2"
+          name="test-req-val"
+          [(ngModel)]="process.externalDataConfiguration.urlParams[i].testRequestValue"
+        />
+        <button style="margin: 0.5rem" class="btn btn-secondary" (click)="executeTestRequest()">Wykonaj</button>
+      </div>
+      <p *ngIf="testRequestError" class="text-red">Nie znaleziono</p>
+    </div>
+    <ng-container *ngIf="testResponse" class="mb-2">
+      <h6 class="mb-2 mt-4" data-testid="externalDataHeader">Wynik zapytania</h6>
+      <textarea
+        [rows]="testResponse ? 8 : 5"
+        class="json-config-response mt-2"
+        name="response-json"
+        [(ngModel)]="testResponse"
+      ></textarea>
+    </ng-container>
+  </ng-container>
+</ng-template>
+
+<autocomplete-process-response
+  [process]="process"
+  [processDataType]="ProcessDataType.EXTERNAL"
+></autocomplete-process-response>

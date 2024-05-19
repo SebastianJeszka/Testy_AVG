@@ -1,0 +1,211 @@
+<header class="ibe-header">
+  <a class="ibe-header__home" href="https://edukacja.gov.pl/" aria-label="Strona główna edukacja.gov.pl">
+    <h1 class="ibe-header__h1">
+      <div class="ibe-header__emblem">
+        <img class="ibe-header__emblem-image" src="https://aplikacje.edukacja.gov.pl/app/assets/herb-polski.svg" />
+      </div>
+      <span class="ibe-header__name">edukacja.gov.pl</span>
+    </h1>
+  </a>
+  <p class="ibe-header__portal-name">Portal edukacji i nauki</p>
+
+  <div class="d-flex ml-auto m-3" *ngIf="isAuth$ | async">
+    <button class="btn btn-secondary pl-3 pr-3 mr-3" *ngIf="isContextSelected$ | async" (click)="changeContext()">
+      <i class="gov-icon gov-icon--citizen"></i>
+    </button>
+    <button class="btn" (click)="logout()" data-testid="logoutButton">
+      <i class="gov-icon gov-icon--account mr-1"></i>
+      Wyloguj
+    </button>
+  </div>
+</header>
+
+<blue-header></blue-header>
+
+<section class="main-container">
+  <ng-container *ngIf="isAuth$ | async; else noAuth">
+    <ngx-ibe-context-selector>
+      <ng-template ngxIbeContextSelectorContent>
+        <router-outlet></router-outlet>
+      </ng-template>
+    </ngx-ibe-context-selector>
+  </ng-container>
+  <ng-template #noAuth>
+    <div *ngIf="isLoggedOut" class="mt-4 mb-5">Pomyślnie wylogowano.</div>
+  </ng-template>
+</section>
+<footer class="ibe-footer">
+  <div class="ibe-footer__container">
+    <div class="ibe-footer__content">
+      <h2 class="ibe-footer__h2"><span class="sr-only">stopka</span> Portal edukacji i nauki</h2>
+      <div class="ibe-footer__contact">
+        <div class="ibe-footer__contact-item">
+          <p class="ibe-footer__contact-item-head">Adres</p>
+          <address>
+            <p>ul. Górczewska 8</p>
+            <p>01-180 Warszawa</p>
+            <p>NIP: 525 000 86 95</p>
+            <p>REGON: 000178235</p>
+          </address>
+        </div>
+        <div class="ibe-footer__contact-item">
+          <p class="ibe-footer__contact-item-head">Kontakt</p>
+          <p>Skontaktuj się z nami</p>
+          <p><a href="tel: 22 120 24 30">22 120 24 30</a></p>
+          <br />
+          <p class="ibe-footer__text-small">Pracujemy w dni robocze od 8:00&nbsp;do&nbsp;16:00</p>
+          <br />
+          <p>
+            Masz pytanie?<br /><a href="https://edukacja.gov.pl/web/gov/formularz-kontaktowy-portalu" target="_blank"
+              >Napisz do nas!</a
+            >
+          </p>
+        </div>
+        <div class="ibe-footer__contact-item">
+          <p>
+            <a href="https://edukacja.gov.pl/web/gov/deklaracja-dostepnosci" target="_blank">Deklaracja dostępności</a>
+          </p>
+          <p>
+            <a href="https://edukacja.gov.pl/web/gov/polityka-prywatnosci" target="_blank"
+              >Polityka prywatności i polityka cookies</a
+            >
+          </p>
+          <p><a href="https://edukacja.gov.pl/web/gov/warunki-korzystania" target="_blank">Warunki korzystania</a></p>
+          <p><a href="#" target="_blank">Mapa strony</a></p>
+        </div>
+        <div class="ibe-footer__contact-item ibe-footer__contact-item--social">
+          <p class="ibe-footer__contact-item-head">Media społecznościowe</p>
+          <ul class="ibe-footer__social">
+            <li>
+              <a
+                href="https://www.facebook.com/IBEEDU/"
+                alt="Konto IBE na Facebook - otworzy się w nowym oknie"
+                target="_blank"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                  <path
+                    d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-3 7h-1.924c-.615 0-1.076.252-1.076.889v1.111h3l-.238 3h-2.762v8h-3v-8h-2v-3h2v-1.923c0-2.022 1.064-3.077 3.461-3.077h2.539v3z"
+                  />
+                </svg>
+              </a>
+            </li>
+            <li>
+              <a
+                href="https://twitter.com/ibe_edu"
+                alt="Konto IBE na Twitter - otworzy się w nowym oknie"
+                target="_blank"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                  <path
+                    d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-.139 9.237c.209 4.617-3.234 9.765-9.33 9.765-1.854 0-3.579-.543-5.032-1.475 1.742.205 3.48-.278 4.86-1.359-1.437-.027-2.649-.976-3.066-2.28.515.098 1.021.069 1.482-.056-1.579-.317-2.668-1.739-2.633-3.26.442.246.949.394 1.486.411-1.461-.977-1.875-2.907-1.016-4.383 1.619 1.986 4.038 3.293 6.766 3.43-.479-2.053 1.08-4.03 3.199-4.03.943 0 1.797.398 2.395 1.037.748-.147 1.451-.42 2.086-.796-.246.767-.766 1.41-1.443 1.816.664-.08 1.297-.256 1.885-.517-.439.656-.996 1.234-1.639 1.697z"
+                  />
+                </svg>
+              </a>
+            </li>
+            <li>
+              <a
+                href="https://www.youtube.com/@instytutbadanedukacyjnych"
+                alt="Konto IBE na Youtube - otworzy się w nowym oknie"
+                target="_blank"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                  <path
+                    d="M10 9.333l5.333 2.662-5.333 2.672v-5.334zm14-4.333v14c0 2.761-2.238 5-5 5h-14c-2.761 0-5-2.239-5-5v-14c0-2.761 2.239-5 5-5h14c2.762 0 5 2.239 5 5zm-4 7c-.02-4.123-.323-5.7-2.923-5.877-2.403-.164-7.754-.163-10.153 0-2.598.177-2.904 1.747-2.924 5.877.02 4.123.323 5.7 2.923 5.877 2.399.163 7.75.164 10.153 0 2.598-.177 2.904-1.747 2.924-5.877z"
+                  />
+                </svg>
+              </a>
+            </li>
+            <li>
+              <a
+                href="https://pl.linkedin.com/company/ibe_edu"
+                alt="Konto IBE na Linkedin - otworzy się w nowym oknie"
+                target="_blank"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                  <path
+                    d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"
+                  />
+                </svg>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="ibe-footer__hr"></div>
+      <div class="ibe-footer__creative-commons">
+        <p class="ibe-footer__text-small">
+          Serwis prowadzi Instytut Badań Edukacyjnych na zlecenie Ministerstwa Edukacji i Nauki.
+        </p>
+        <p class="ibe-footer__text-extra-small">
+          Strony dostępne w domenie www.gov.pl mogą zawierać adresy skrzynek mailowych. Użytkownik korzystający z
+          odnośnika będącego adresem e-mail zgadza się na przetwarzanie swoich danych (adresu e-mail oraz danych, które
+          dobrowolnie podał w wiadomości) w celu uzyskania odpowiedzi na przesłane pytania. Szczegóły przetwarzania
+          danych przez każdą z jednostek znajdują się w ich politykach przetwarzania danych osobowych.
+        </p>
+        <div class="ibe-footer__creative-commons-content">
+          <div class="ibe-footer__creative-commons-icons">
+            <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M197.711,296.668c-22.267,0-30.808-18.799-30.808-40.659c0-27.108,10.285-40.656,30.808-40.656    c2.06,0,16.721,0.323,25.467,18.482l30.81-16.025c-12.325-22.176-32.711-33.267-61.201-33.258    c-27.479,0-67.357,17.037-67.357,71.467c0,61.888,47.632,71.457,68.592,71.457c36.548,0,54.651-25.477,60.375-36.149    l-28.332-14.376C220.573,290.092,211.131,296.668,197.711,296.668z"
+              />
+              <path
+                d="M255.591,26.001C123.139,26.001,26.001,132.71,26.001,256c0,128.438,105.354,229.999,229.59,229.999    c120.5,0,230.408-93.549,230.408-229.999C485.999,128.138,387.118,26.001,255.591,26.001z M256.398,444.091    c-104.371,0-188.915-86.288-188.915-188.091c0-97.768,79.23-188.516,188.935-188.516c104.363,0,188.098,82.968,188.098,188.507    C444.506,368.849,352.071,444.091,256.398,444.091z"
+              />
+              <path
+                d="M330.379,296.668c-22.249,0-30.809-18.818-30.809-40.659c0-27.108,10.276-40.656,30.809-40.656    c2.021,0,17.063,0.146,25.874,18.482l30.401-16.025c-12.037-22.176-32.319-33.267-60.801-33.258    c-27.507,0-67.36,17.056-67.36,71.467c0,62.304,47.551,71.457,68.594,71.457c40.527,0,58.417-32.672,60.365-36.149l-28.75-14.376    C353.24,290.092,343.78,296.668,330.379,296.668z"
+              />
+            </svg>
+            <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M318.045,198.871v94.041h-26.247v111.753h-71.504v-111.66h-26.245v-94.134c0-4.08,1.483-7.604,4.266-10.479    c2.875-2.876,6.399-4.359,10.48-4.359h94.503c3.803,0,7.232,1.483,10.295,4.359C316.467,191.359,318.045,194.791,318.045,198.871z     M223.911,139.795c0-21.608,10.666-32.459,31.997-32.459c21.33,0,31.996,10.851,31.996,32.459    c0,21.331-10.666,31.995-31.996,31.995C234.577,171.79,223.911,161.126,223.911,139.795z M255.628,26.001    c131.509,0,230.371,102.109,230.371,229.999c0,136.422-109.898,229.999-230.371,229.999    C131.354,485.999,26.001,384.447,26.001,256C26.001,132.747,123.102,26.001,255.628,26.001z M256.371,67.457    c-109.62,0-188.914,90.795-188.914,188.543c0,101.829,84.579,188.08,188.914,188.08c95.709,0,188.081-75.213,188.081-188.08    C444.545,150.461,360.797,67.457,256.371,67.457L256.371,67.457z"
+              />
+            </svg>
+          </div>
+          <div class="ibe-footer__text-extra-small">
+            Wszystkie treści publikowane w serwisie są udostępniane na licencji
+            <a
+              href="https://creativecommons.org/licenses/by/3.0/pl/"
+              alt="Creative Commons Uznanie Autorstwa 3.0 Polska - otworzy się w nowej karcie"
+              target="_blank"
+            >
+              Creative Commons Uznanie Autorstwa 3.0 Polska </a
+            >, o ile nie jest to stwierdzone inaczej.
+          </div>
+        </div>
+        <div class="ibe-footer__logotypes">
+          <img
+            class="ibe-footer__logotypes-item"
+            alt="Logo Ministerstwa Edukacji i Nauki"
+            src="https://aplikacje.edukacja.gov.pl/app/assets/logo-mein.svg"
+          />
+          <img
+            class="ibe-footer__logotypes-item"
+            alt="Logo Govtech Polska"
+            src="https://aplikacje.edukacja.gov.pl/app/assets/logo-govtech.svg"
+          />
+          <img
+            class="ibe-footer__logotypes-item"
+            alt="Logo MEiN Tech"
+            src="https://aplikacje.edukacja.gov.pl/app/assets/logo-mein-tech.svg"
+          />
+          <img
+            class="ibe-footer__logotypes-item ibe-footer__logotypes-item--ibe"
+            alt="Logo Instytutu Badań Edukacyjnych"
+            src="https://aplikacje.edukacja.gov.pl/app/assets/logo-ibe.svg"
+          />
+          <img
+            class="ibe-footer__logotypes-item"
+            alt="Logo Ośrodek Rozwoju Edukacji"
+            src="https://aplikacje.edukacja.gov.pl/app/assets/logo-ore.svg"
+          />
+          <img
+            class="ibe-footer__logotypes-item"
+            alt="Logo Laboratorii Przyszłości"
+            src="https://aplikacje.edukacja.gov.pl/app/assets/logo-lp.svg"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+<ngx-ibe-loader></ngx-ibe-loader>

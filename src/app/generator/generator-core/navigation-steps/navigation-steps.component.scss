@@ -1,0 +1,27 @@
+@import '../../../../assets/styles/variables';
+
+.navigation-step__input {
+  margin-bottom: -1.5rem;
+}
+
+.navigation-step__remove {
+  display: flex;
+  align-items: center;
+  font-size: 0.8rem;
+  color: $dark-blue;
+  height: 100%;
+
+  img {
+    width: 16px;
+  }
+}
+
+.navigation-step__order-buttons {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.navigation-step__order-button {
+  color: $dark-blue;
+}

@@ -1,0 +1,77 @@
+a {
+  color: #0052a5;
+}
+
+button {
+  color: #0052a5;
+  background: none;
+  border: none;
+}
+
+.list-tree {
+  list-style-type: none;
+  padding-left: 0;
+  &__icon {
+    padding-right: 0.5rem;
+    position: relative;
+    margin-top: -0.05rem;
+  }
+  &__nested & {
+    padding-left: 0.75rem;
+    &__icon {
+      padding-left: 1.1rem;
+      &:before {
+        content: '';
+        position: absolute;
+        left: 0;
+        width: 1rem;
+        top: 0.7rem;
+        border-top: 2px dotted lightgray;
+      }
+    }
+    & li:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: -0.15rem;
+      border-left: 2px dotted lightgray;
+    }
+    & li:last-child:after {
+      content: '';
+      position: absolute;
+      width: 2px;
+      top: 1.4rem;
+      left: -0.15rem;
+      bottom: 0;
+      background: #ffffff;
+    }
+  }
+  &__li {
+    position: relative;
+    padding-top: 0.5rem;
+    .branch-header {
+      display: flex;
+      flex-wrap: wrap;
+    }
+  }
+  &__loader {
+    padding-top: 0.5em;
+    padding-left: 2em;
+  }
+  &__btn {
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+  }
+  &__nested {
+    display: none;
+    &--active {
+      display: block;
+    }
+  }
+  &__nested & &__nested & {
+    padding-left: 1.8rem;
+  }
+}

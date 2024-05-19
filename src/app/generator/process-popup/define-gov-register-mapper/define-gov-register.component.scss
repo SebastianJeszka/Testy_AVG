@@ -1,0 +1,13 @@
+@import '../../../../assets/styles/variables';
+
+.register-process-mapper-field__row {
+  .gov-icon--trend-rising {
+    display: block;
+    color: $dark-blue;
+    transform: rotateZ(270deg);
+  }
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
+}

@@ -1,0 +1,13 @@
+@import '../../../assets/styles/variables';
+
+.dictionary {
+  &__title {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: space-between;
+  }
+}
